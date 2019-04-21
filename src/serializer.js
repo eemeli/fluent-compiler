@@ -170,12 +170,8 @@ export function serializeExpression(expr) {
       if (expr.attribute) {
         out = propname(out, expr.attribute.name)
       }
-      if (expr.arguments) {
-        out += serializeCallArguments(expr.arguments)
-      } else {
-        out += '($)'
-      }
-      return out
+      const args = serializeCallArguments(expr.arguments)
+      return `${out}${args}`
     }
     case 'MessageReference': {
       let out = funcname(expr.id.name)
@@ -207,17 +203,17 @@ function serializeVariant(variant) {
 }
 
 function serializeCallArguments(expr) {
-  const positional = expr.positional.map(serializeExpression).join(', ')
-  if (expr.named.length > 0) {
-    const named = expr.named.map(serializeNamedArgument).join(', ')
-    const ctx = `{ ...$, ${named} }`
-    if (expr.positional.length > 0) {
-      return `(${positional}, ${ctx})`
-    } else {
-      return `(${ctx})`
-    }
+  let ctx = '$'
+  if (expr && expr.named.length > 0) {
+    const named = expr.named.map(serializeNamedArgument)
+    ctx = `{ ...$, ${named.join(', ')} }`
   }
-  return `(${positional})`
+  if (expr && expr.positional.length > 0) {
+    const positional = expr.positional.map(serializeExpression)
+    return `(${ctx}, ${positional.join(', ')})`
+  } else {
+    return `(${ctx})`
+  }
 }
 
 function serializeNamedArgument(arg) {

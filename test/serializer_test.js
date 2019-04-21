@@ -472,7 +472,7 @@ suite('Serialize resource', function() {
       foo = { FOO() }
     `
     const output = ftl`
-      export const foo = $ => FOO()
+      export const foo = $ => FOO($)
     `
     assert.equal(pretty(input), output)
   })
@@ -482,7 +482,7 @@ suite('Serialize resource', function() {
       foo = { FOO("bar") }
     `
     const output = ftl`
-      export const foo = $ => FOO("bar")
+      export const foo = $ => FOO($, "bar")
     `
     assert.equal(pretty(input), output)
   })
@@ -492,7 +492,7 @@ suite('Serialize resource', function() {
       foo = { FOO(1) }
     `
     const output = ftl`
-      export const foo = $ => FOO(1)
+      export const foo = $ => FOO($, 1)
     `
     assert.equal(pretty(input), output)
   })
@@ -502,7 +502,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar) }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar($))
+      export const foo = $ => FOO($, bar($))
     `
     assert.equal(pretty(input), output)
   })
@@ -512,7 +512,7 @@ suite('Serialize resource', function() {
       foo = { FOO($bar) }
     `
     const output = ftl`
-      export const foo = $ => FOO($.bar)
+      export const foo = $ => FOO($, $.bar)
     `
     assert.equal(pretty(input), output)
   })
@@ -542,7 +542,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar, baz) }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar($), baz($))
+      export const foo = $ => FOO($, bar($), baz($))
     `
     assert.equal(pretty(input), output)
   })
@@ -562,7 +562,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar, 1, baz: "baz") }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar($), 1, { ...$, baz: "baz" })
+      export const foo = $ => FOO({ ...$, baz: "baz" }, bar($), 1)
     `
     assert.equal(pretty(input), output)
   })
@@ -572,7 +572,7 @@ suite('Serialize resource', function() {
       foo = { -term() }
     `
     const output = ftl`
-      export const foo = $ => _term()
+      export const foo = $ => _term($)
     `
     assert.equal(pretty(input), output)
   })
@@ -582,7 +582,7 @@ suite('Serialize resource', function() {
       foo = {{ FOO() }}
     `
     const output = ftl`
-      export const foo = $ => FOO()
+      export const foo = $ => FOO($)
     `
     assert.equal(pretty(input), output)
   })
@@ -681,7 +681,7 @@ suite('serializeExpression', function() {
     const input = ftl`
       foo = { BUILTIN(3.14, kwarg: "value") }
     `
-    assert.equal(pretty(input), 'BUILTIN(3.14, { ...$, kwarg: "value" })')
+    assert.equal(pretty(input), 'BUILTIN({ ...$, kwarg: "value" }, 3.14)')
   })
 
   test('select expression', function() {
