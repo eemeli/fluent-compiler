@@ -104,7 +104,7 @@ suite('Serialize resource', function() {
       foo = Foo { -bar }
     `
     const output = ftl`
-      export const foo = "Foo "{ -bar }
+      export const foo = "Foo "{ _bar }
     `
     assert.equal(pretty(input), output)
   })
@@ -510,7 +510,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-          { -bar.baz ->
+          { _bar.baz ->
              *[a] "A"
           }
     `
@@ -622,7 +622,7 @@ suite('Serialize resource', function() {
       foo = { -term() }
     `
     const output = ftl`
-      export const foo = { -term() }
+      export const foo = { _term() }
     `
     assert.equal(pretty(input), output)
   })
