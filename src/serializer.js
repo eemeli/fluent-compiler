@@ -182,7 +182,7 @@ export function serializeExpression(expr) {
     case 'NumberLiteral':
       return expr.value
     case 'VariableReference':
-      return `$${expr.id.name}`
+      return propname('$', expr.id.name)
     case 'TermReference': {
       let out = funcname(`-${expr.id.name}`)
       if (expr.attribute) {
@@ -190,6 +190,8 @@ export function serializeExpression(expr) {
       }
       if (expr.arguments) {
         out += serializeCallArguments(expr.arguments)
+      } else {
+        out += '($)'
       }
       return out
     }
@@ -198,7 +200,7 @@ export function serializeExpression(expr) {
       if (expr.attribute) {
         out = propname(out, expr.attribute.name)
       }
-      return out
+      return `${out}($)`
     }
     case 'FunctionReference':
       return `${expr.id.name}${serializeCallArguments(expr.arguments)}`
