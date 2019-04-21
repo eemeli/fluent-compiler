@@ -165,13 +165,13 @@ function serializePlaceable(placeable) {
   const expr = placeable.expression
   switch (expr.type) {
     case 'Placeable':
-      return `{${serializePlaceable(expr)}}`
+      return serializePlaceable(expr)
     case 'SelectExpression':
       // Special-case select expression to control the whitespace around the
       // opening and the closing brace.
       return `{ ${serializeExpression(expr)}}`
     default:
-      return `{ ${serializeExpression(expr)} }`
+      return serializeExpression(expr)
   }
 }
 
