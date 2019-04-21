@@ -1,0 +1,26 @@
+{
+  "name": "fluent-compiler",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/serializer.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eemeli/fluent-compiler.git"
+  },
+  "keywords": [
+    "localization",
+    "l10n",
+    "internationalization",
+    "i18n",
+    "ftl",
+    "ast",
+    "compiler",
+    "transpiler"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/eemeli/fluent-compiler#readme",
+  "dependencies": {
+    "fluent-syntax": "^0.13.0"
+  }
+}
