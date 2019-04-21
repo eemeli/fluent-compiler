@@ -1,3 +1,5 @@
+import { funcname, propname } from './util'
+
 function includes(arr, elem) {
   return arr.indexOf(elem) > -1
 }
@@ -93,14 +95,15 @@ function serializeMessage(message) {
     parts.push(serializeComment(message.comment))
   }
 
-  parts.push(`export const ${message.id.name} =`)
+  const name = funcname(message.id.name)
+  parts.push(`export const ${name} =`)
 
   if (message.value) {
     parts.push(serializePattern(message.value))
   }
 
   for (const attribute of message.attributes) {
-    parts.push(serializeAttribute(message.id.name, attribute))
+    parts.push(serializeAttribute(name, attribute))
   }
 
   parts.push('\n')
@@ -114,20 +117,22 @@ function serializeTerm(term) {
     parts.push(serializeComment(term.comment))
   }
 
-  parts.push(`const _${term.id.name} =`)
+  const name = funcname(`-${term.id.name}`)
+  parts.push(`const ${name} =`)
   parts.push(serializePattern(term.value))
 
   for (const attribute of term.attributes) {
-    parts.push(serializeAttribute(term.id.name, attribute))
+    parts.push(serializeAttribute(name, attribute))
   }
 
   parts.push('\n')
   return parts.join('')
 }
 
-function serializeAttribute(name, attribute) {
+function serializeAttribute(parentName, attribute) {
+  const name = propname(parentName, attribute.id.name)
   const value = indent(serializePattern(attribute.value))
-  return `\n${name}[${JSON.stringify(attribute.id.name)}] =${value}`
+  return `\n${name} =${value}`
 }
 
 function serializePattern(pattern) {

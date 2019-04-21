@@ -244,7 +244,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-      foo["attr"] = Foo Attr
+      foo.attr = Foo Attr
     `
     assert.equal(pretty(input), output)
   })
@@ -258,7 +258,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-      foo["attr"] =
+      foo.attr =
               Foo Attr
               Continued
     `
