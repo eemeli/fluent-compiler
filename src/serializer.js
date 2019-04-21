@@ -231,16 +231,22 @@ function serializeVariant(variant) {
 
 function serializeCallArguments(expr) {
   const positional = expr.positional.map(serializeExpression).join(', ')
-  const named = expr.named.map(serializeNamedArgument).join(', ')
-  if (expr.positional.length > 0 && expr.named.length > 0) {
-    return `(${positional}, ${named})`
+  if (expr.named.length > 0) {
+    const named = expr.named.map(serializeNamedArgument).join(', ')
+    const ctx = `{ ...$, ${named} }`
+    if (expr.positional.length > 0) {
+      return `(${positional}, ${ctx})`
+    } else {
+      return `(${ctx})`
+    }
   }
-  return `(${positional || named})`
+  return `(${positional})`
 }
 
 function serializeNamedArgument(arg) {
+  const key = propname(null, arg.name.name)
   const value = serializeExpression(arg.value)
-  return `${arg.name.name}: ${value}`
+  return `${key}: ${value}`
 }
 
 export function serializeVariantKey(key) {

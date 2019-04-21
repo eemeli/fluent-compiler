@@ -572,7 +572,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar: 1) }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar: 1)
+      export const foo = $ => FOO({ ...$, bar: 1 })
     `
     assert.equal(pretty(input), output)
   })
@@ -582,7 +582,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar: "bar") }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar: "bar")
+      export const foo = $ => FOO({ ...$, bar: "bar" })
     `
     assert.equal(pretty(input), output)
   })
@@ -602,7 +602,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar: "bar", baz: "baz") }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar: "bar", baz: "baz")
+      export const foo = $ => FOO({ ...$, bar: "bar", baz: "baz" })
     `
     assert.equal(pretty(input), output)
   })
@@ -612,7 +612,7 @@ suite('Serialize resource', function() {
       foo = { FOO(bar, 1, baz: "baz") }
     `
     const output = ftl`
-      export const foo = $ => FOO(bar($), 1, baz: "baz")
+      export const foo = $ => FOO(bar($), 1, { ...$, baz: "baz" })
     `
     assert.equal(pretty(input), output)
   })
@@ -731,7 +731,7 @@ suite('serializeExpression', function() {
     const input = ftl`
       foo = { BUILTIN(3.14, kwarg: "value") }
     `
-    assert.equal(pretty(input), 'BUILTIN(3.14, kwarg: "value")')
+    assert.equal(pretty(input), 'BUILTIN(3.14, { ...$, kwarg: "value" })')
   })
 
   test('select expression', function() {
