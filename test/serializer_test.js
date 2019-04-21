@@ -1,9 +1,10 @@
 import assert from "assert";
+import { FluentParser } from "fluent-syntax";
 import { ftl } from "./util";
 
 import {
-  FluentParser, FluentSerializer, serializeExpression, serializeVariantKey
-} from "../src";
+  FluentSerializer, serializeExpression, serializeVariantKey
+} from "../src/serializer";
 
 
 suite("Serialize resource", function() {

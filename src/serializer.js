@@ -1,4 +1,6 @@
-import { includes } from "./util";
+function includes(arr, elem) {
+  return arr.indexOf(elem) > -1;
+}
 
 function indent(content) {
   return content.split("\n").join("\n    ");
