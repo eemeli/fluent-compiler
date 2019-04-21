@@ -52,19 +52,19 @@ export class FluentSerializer {
         return serializeTerm(entry)
       case 'Comment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '#')}\n`
+          return `\n${serializeComment(entry, '//')}\n`
         }
-        return `${serializeComment(entry, '#')}\n`
+        return `${serializeComment(entry, '//')}\n`
       case 'GroupComment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '##')}\n`
+          return `\n${serializeComment(entry, '// ##')}\n`
         }
-        return `${serializeComment(entry, '##')}\n`
+        return `${serializeComment(entry, '// ##')}\n`
       case 'ResourceComment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '###')}\n`
+          return `\n${serializeComment(entry, '// ###')}\n`
         }
-        return `${serializeComment(entry, '###')}\n`
+        return `${serializeComment(entry, '// ###')}\n`
       case 'Junk':
         return serializeJunk(entry)
       default:
@@ -73,7 +73,7 @@ export class FluentSerializer {
   }
 }
 
-function serializeComment(comment, prefix = '#') {
+function serializeComment(comment, prefix = '//') {
   const prefixed = comment.content
     .split('\n')
     .map(line => (line.length ? `${prefix} ${line}` : prefix))
@@ -83,7 +83,7 @@ function serializeComment(comment, prefix = '#') {
 }
 
 function serializeJunk(junk) {
-  return junk.content
+  return junk.content.replace(/^/gm, '// ')
 }
 
 function serializeMessage(message) {

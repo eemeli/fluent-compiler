@@ -125,7 +125,13 @@ suite('Serialize resource', function() {
 
       foo = Foo
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      // ### A multiline
+      // ### resource comment.
+
+      foo = Foo
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('message comment', function() {
@@ -134,7 +140,12 @@ suite('Serialize resource', function() {
       # message comment.
       foo = Foo
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      // A multiline
+      // message comment.
+      foo = Foo
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('group comment', function() {
@@ -148,7 +159,17 @@ suite('Serialize resource', function() {
 
       bar = Bar
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      foo = Foo
+
+      // ## Comment Header
+      // ##
+      // ## A multiline
+      // ## group comment.
+
+      bar = Bar
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('standalone comment', function() {
@@ -159,7 +180,14 @@ suite('Serialize resource', function() {
 
       bar = Bar
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      foo = Foo
+
+      // A Standalone Comment
+
+      bar = Bar
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('multiline with placeable', function() {
@@ -571,10 +599,19 @@ suite('Serialize padding around comments', function() {
 
       bar = Bar
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      // Comment A
+
+      foo = Foo
+
+      // Comment B
+
+      bar = Bar
+    `
+    assert.equal(pretty(input), output)
     // Run again to make sure the same instance of the serializer doesn't keep
     // state about how many entires is has already serialized.
-    assert.equal(pretty(input), input)
+    assert.equal(pretty(input), output)
   })
 
   test('group comment has not padding when first', function() {
@@ -587,8 +624,17 @@ suite('Serialize padding around comments', function() {
 
       bar = Bar
     `
-    assert.equal(pretty(input), input)
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      // ## Group A
+
+      foo = Foo
+
+      // ## Group B
+
+      bar = Bar
+    `
+    assert.equal(pretty(input), output)
+    assert.equal(pretty(input), output)
   })
 
   test('resource comment has not padding when first', function() {
@@ -601,8 +647,17 @@ suite('Serialize padding around comments', function() {
 
       bar = Bar
     `
-    assert.equal(pretty(input), input)
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      // ### Resource Comment A
+
+      foo = Foo
+
+      // ### Resource Comment B
+
+      bar = Bar
+    `
+    assert.equal(pretty(input), output)
+    assert.equal(pretty(input), output)
   })
 })
 
