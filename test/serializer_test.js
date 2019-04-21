@@ -587,12 +587,12 @@ suite('Serialize resource', function() {
     assert.equal(pretty(input), output)
   })
 
-  test.skip('Backslash in TextElement', function() {
+  test('Backslash in TextElement', function() {
     const input = ftl`
       foo = \\{ placeable }
     `
     const output = ftl`
-      export const foo = $ => "\\"{ placeable }
+      export const foo = $ => "\\\\" + placeable($)
     `
     assert.equal(pretty(input), output)
   })
