@@ -36,14 +36,20 @@ suite('Serialize resource', function() {
     const input = ftl`
       foo = Foo
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('simple term', function() {
     const input = ftl`
       -foo = Foo
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      const _foo = Foo
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('two simple messages', function() {
@@ -51,7 +57,11 @@ suite('Serialize resource', function() {
       foo = Foo
       bar = Bar
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo
+      export const bar = Bar
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('block multiline message', function() {
@@ -60,7 +70,12 @@ suite('Serialize resource', function() {
           Foo
           Bar
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          Foo
+          Bar
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('inline multiline message', function() {
@@ -69,7 +84,7 @@ suite('Serialize resource', function() {
           Bar
     `
     const output = ftl`
-      foo =
+      export const foo =
           Foo
           Bar
     `
@@ -80,42 +95,60 @@ suite('Serialize resource', function() {
     const input = ftl`
       foo = Foo { bar }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { bar }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('term reference', function() {
     const input = ftl`
       foo = Foo { -bar }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { -bar }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('external argument', function() {
     const input = ftl`
       foo = Foo { $bar }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { $bar }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('number element', function() {
     const input = ftl`
       foo = Foo { 1 }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { 1 }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('string element', function() {
     const input = ftl`
       foo = Foo { "bar" }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { "bar" }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('attribute expression', function() {
     const input = ftl`
       foo = Foo { bar.baz }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo { bar.baz }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('resource comment', function() {
@@ -129,7 +162,7 @@ suite('Serialize resource', function() {
       // ### A multiline
       // ### resource comment.
 
-      foo = Foo
+      export const foo = Foo
     `
     assert.equal(pretty(input), output)
   })
@@ -143,7 +176,7 @@ suite('Serialize resource', function() {
     const output = ftl`
       // A multiline
       // message comment.
-      foo = Foo
+      export const foo = Foo
     `
     assert.equal(pretty(input), output)
   })
@@ -160,14 +193,14 @@ suite('Serialize resource', function() {
       bar = Bar
     `
     const output = ftl`
-      foo = Foo
+      export const foo = Foo
 
       // ## Comment Header
       // ##
       // ## A multiline
       // ## group comment.
 
-      bar = Bar
+      export const bar = Bar
     `
     assert.equal(pretty(input), output)
   })
@@ -181,11 +214,11 @@ suite('Serialize resource', function() {
       bar = Bar
     `
     const output = ftl`
-      foo = Foo
+      export const foo = Foo
 
       // A Standalone Comment
 
-      bar = Bar
+      export const bar = Bar
     `
     assert.equal(pretty(input), output)
   })
@@ -196,7 +229,12 @@ suite('Serialize resource', function() {
           Foo { bar }
           Baz
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          Foo { bar }
+          Baz
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('attribute', function() {
@@ -204,7 +242,11 @@ suite('Serialize resource', function() {
       foo =
           .attr = Foo Attr
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+      foo["attr"] = Foo Attr
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('multiline attribute', function() {
@@ -214,7 +256,13 @@ suite('Serialize resource', function() {
               Foo Attr
               Continued
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+      foo["attr"] =
+              Foo Attr
+              Continued
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('two attributes', function() {
@@ -223,7 +271,12 @@ suite('Serialize resource', function() {
           .attr-a = Foo Attr A
           .attr-b = Foo Attr B
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+      foo["attr-a"] = Foo Attr A
+      foo["attr-b"] = Foo Attr B
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('value and attributes', function() {
@@ -232,7 +285,12 @@ suite('Serialize resource', function() {
           .attr-a = Foo Attr A
           .attr-b = Foo Attr B
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = Foo Value
+      foo["attr-a"] = Foo Attr A
+      foo["attr-b"] = Foo Attr B
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('multiline value and attributes', function() {
@@ -243,7 +301,14 @@ suite('Serialize resource', function() {
           .attr-a = Foo Attr A
           .attr-b = Foo Attr B
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          Foo Value
+          Continued
+      foo["attr-a"] = Foo Attr A
+      foo["attr-b"] = Foo Attr B
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('select expression', function() {
@@ -254,7 +319,14 @@ suite('Serialize resource', function() {
               [b] B
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { $sel ->
+             *[a] A
+              [b] B
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('multiline variant', function() {
@@ -266,7 +338,15 @@ suite('Serialize resource', function() {
                   BBB
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { $sel ->
+             *[a]
+                  AAA
+                  BBB
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('multiline variant with first line inline', function() {
@@ -278,7 +358,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      foo =
+      export const foo =
           { $sel ->
              *[a]
                   AAA
@@ -295,7 +375,13 @@ suite('Serialize resource', function() {
              *[1] 1
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { $sel ->
+             *[1] 1
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('select expression in block value', function() {
@@ -306,7 +392,14 @@ suite('Serialize resource', function() {
               [b] B
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          Foo { $sel ->
+             *[a] A
+              [b] B
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('select expression in inline value', function() {
@@ -317,7 +410,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      foo =
+      export const foo =
           Foo { $sel ->
              *[a] A
               [b] B
@@ -335,7 +428,15 @@ suite('Serialize resource', function() {
               [b] B
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          Foo
+          Bar { $sel ->
+             *[a] A
+              [b] B
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('nested select expression', function() {
@@ -348,7 +449,16 @@ suite('Serialize resource', function() {
                   }
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { $a ->
+             *[a]
+                  { $b ->
+                     *[b] Foo
+                  }
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('selector external argument', function() {
@@ -358,7 +468,13 @@ suite('Serialize resource', function() {
              *[a] A
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { $bar ->
+             *[a] A
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('selector number expression', function() {
@@ -368,7 +484,13 @@ suite('Serialize resource', function() {
              *[a] A
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { 1 ->
+             *[a] A
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('selector string expression', function() {
@@ -378,7 +500,13 @@ suite('Serialize resource', function() {
              *[a] A
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { "bar" ->
+             *[a] A
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('selector attribute expression', function() {
@@ -388,112 +516,163 @@ suite('Serialize resource', function() {
              *[a] A
           }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo =
+          { -bar.baz ->
+             *[a] A
+          }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression', function() {
     const input = ftl`
       foo = { FOO() }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO() }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with string expression', function() {
     const input = ftl`
       foo = { FOO("bar") }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO("bar") }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with number expression', function() {
     const input = ftl`
       foo = { FOO(1) }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(1) }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with message reference', function() {
     const input = ftl`
       foo = { FOO(bar) }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar) }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with external argument', function() {
     const input = ftl`
       foo = { FOO($bar) }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO($bar) }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with number named argument', function() {
     const input = ftl`
       foo = { FOO(bar: 1) }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar: 1) }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with string named argument', function() {
     const input = ftl`
       foo = { FOO(bar: "bar") }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar: "bar") }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with two positional arguments', function() {
     const input = ftl`
       foo = { FOO(bar, baz) }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar, baz) }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with two named arguments', function() {
     const input = ftl`
       foo = { FOO(bar: "bar", baz: "baz") }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar: "bar", baz: "baz") }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('call expression with positional and named arguments', function() {
     const input = ftl`
       foo = { FOO(bar, 1, baz: "baz") }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { FOO(bar, 1, baz: "baz") }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('macro call', function() {
     const input = ftl`
       foo = { -term() }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { -term() }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('nested placeables', function() {
     const input = ftl`
       foo = {{ FOO() }}
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = {{ FOO() }}
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('Backslash in TextElement', function() {
     const input = ftl`
       foo = \\{ placeable }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = \\{ placeable }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('Escaped special char in StringLiteral', function() {
     const input = ftl`
       foo = { "Escaped \\" quote" }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { "Escaped \\" quote" }
+    `
+    assert.equal(pretty(input), output)
   })
 
   test('Unicode escape sequence', function() {
     const input = ftl`
       foo = { "\\u0065" }
     `
-    assert.equal(pretty(input), input)
+    const output = ftl`
+      export const foo = { "\\u0065" }
+    `
+    assert.equal(pretty(input), output)
   })
 })
 
@@ -602,11 +781,11 @@ suite('Serialize padding around comments', function() {
     const output = ftl`
       // Comment A
 
-      foo = Foo
+      export const foo = Foo
 
       // Comment B
 
-      bar = Bar
+      export const bar = Bar
     `
     assert.equal(pretty(input), output)
     // Run again to make sure the same instance of the serializer doesn't keep
@@ -627,11 +806,11 @@ suite('Serialize padding around comments', function() {
     const output = ftl`
       // ## Group A
 
-      foo = Foo
+      export const foo = Foo
 
       // ## Group B
 
-      bar = Bar
+      export const bar = Bar
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)
@@ -650,11 +829,11 @@ suite('Serialize padding around comments', function() {
     const output = ftl`
       // ### Resource Comment A
 
-      foo = Foo
+      export const foo = Foo
 
       // ### Resource Comment B
 
-      bar = Bar
+      export const bar = Bar
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)

@@ -28,7 +28,7 @@ suite('Serialize entry', function() {
       }
     }
     const output = ftl`
-      foo = Foo
+      export const foo = Foo
     `
 
     const message = this.serializer.serializeEntry(input)

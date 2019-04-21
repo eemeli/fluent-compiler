@@ -93,14 +93,14 @@ function serializeMessage(message) {
     parts.push(serializeComment(message.comment))
   }
 
-  parts.push(`${message.id.name} =`)
+  parts.push(`export const ${message.id.name} =`)
 
   if (message.value) {
     parts.push(serializePattern(message.value))
   }
 
   for (const attribute of message.attributes) {
-    parts.push(serializeAttribute(attribute))
+    parts.push(serializeAttribute(message.id.name, attribute))
   }
 
   parts.push('\n')
@@ -114,20 +114,20 @@ function serializeTerm(term) {
     parts.push(serializeComment(term.comment))
   }
 
-  parts.push(`-${term.id.name} =`)
+  parts.push(`const _${term.id.name} =`)
   parts.push(serializePattern(term.value))
 
   for (const attribute of term.attributes) {
-    parts.push(serializeAttribute(attribute))
+    parts.push(serializeAttribute(term.id.name, attribute))
   }
 
   parts.push('\n')
   return parts.join('')
 }
 
-function serializeAttribute(attribute) {
+function serializeAttribute(name, attribute) {
   const value = indent(serializePattern(attribute.value))
-  return `\n    .${attribute.id.name} =${value}`
+  return `\n${name}[${JSON.stringify(attribute.id.name)}] =${value}`
 }
 
 function serializePattern(pattern) {
