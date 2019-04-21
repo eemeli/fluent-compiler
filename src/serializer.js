@@ -96,10 +96,12 @@ function serializeMessage(message) {
   }
 
   const name = funcname(message.id.name)
-  parts.push(`export const ${name} =`)
+  parts.push(`export const ${name} = $ =>`)
 
   if (message.value) {
     parts.push(serializePattern(message.value))
+  } else {
+    parts.push(' null')
   }
 
   for (const attribute of message.attributes) {
@@ -118,7 +120,7 @@ function serializeTerm(term) {
   }
 
   const name = funcname(`-${term.id.name}`)
-  parts.push(`const ${name} =`)
+  parts.push(`const ${name} = $ =>`)
   parts.push(serializePattern(term.value))
 
   for (const attribute of term.attributes) {
@@ -132,7 +134,7 @@ function serializeTerm(term) {
 function serializeAttribute(parentName, attribute) {
   const name = propname(parentName, attribute.id.name)
   const value = indent(serializePattern(attribute.value))
-  return `\n${name} =${value}`
+  return `\n${name} = $ =>${value}`
 }
 
 function serializePattern(pattern) {
