@@ -13,7 +13,7 @@ export class FluentSerializer {
     this._exports = []
   }
 
-  serialize(resource) {
+  serialize(resource, locale) {
     this._exports = []
 
     if (resource.type !== 'Resource') {
@@ -22,6 +22,12 @@ export class FluentSerializer {
 
     let state = 0
     const parts = []
+
+    const lc = JSON.stringify(locale || undefined)
+    parts.push('import $Runtime from "fluent-compiler/runtime"\n')
+    parts.push(
+      `const { $messages, $select, DATETIME, NUMBER } = $Runtime(${lc})\n\n`
+    )
 
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {

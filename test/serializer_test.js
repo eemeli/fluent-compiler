@@ -8,6 +8,12 @@ import {
   serializeVariantKey
 } from '../src/serializer'
 
+function trimModuleHeaders(source) {
+  return source
+    .replace(/^import .Runtime from .*\n/, '')
+    .replace(/^const { .* } = .Runtime.*\n\n/, '')
+}
+
 suite('Serialize resource', function() {
   let pretty
 
@@ -19,7 +25,7 @@ suite('Serialize resource', function() {
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return serializer.serialize(res)
+      return trimModuleHeaders(serializer.serialize(res))
     }
   })
 
@@ -800,7 +806,7 @@ suite('Serialize padding around comments', function() {
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return serializer.serialize(res)
+      return trimModuleHeaders(serializer.serialize(res))
     }
   })
 
