@@ -10,9 +10,12 @@ const HAS_ENTRIES = 1
 export class FluentSerializer {
   constructor({ withJunk = false } = {}) {
     this.withJunk = withJunk
+    this._exports = []
   }
 
   serialize(resource) {
+    this._exports = []
+
     if (resource.type !== 'Resource') {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
@@ -29,13 +32,22 @@ export class FluentSerializer {
       }
     }
 
+    if (this._exports.length > 0) {
+      parts.push(
+        `\nexport default $messages({ ${this._exports.join(', ')} })\n`
+      )
+    }
+
     return parts.join('')
   }
 
   serializeEntry(entry, state = 0) {
     switch (entry.type) {
-      case 'Message':
-        return serializeMessage(entry)
+      case 'Message': {
+        const varName = funcname(entry.id.name)
+        this._exports.push(serializeExport(entry.id.name, varName))
+        return serializeMessage(entry, varName)
+      }
       case 'Term':
         return serializeTerm(entry)
       case 'Comment':
@@ -61,6 +73,14 @@ export class FluentSerializer {
   }
 }
 
+function serializeExport(id, varName) {
+  if (id === varName) {
+    return id
+  } else {
+    return `${propname(null, id)}: ${varName}`
+  }
+}
+
 function serializeComment(comment, prefix = '//') {
   const prefixed = comment.content
     .split('\n')
@@ -74,15 +94,14 @@ function serializeJunk(junk) {
   return junk.content.replace(/^/gm, '// ')
 }
 
-function serializeMessage(message) {
+function serializeMessage(message, varName) {
   const parts = []
 
   if (message.comment) {
     parts.push(serializeComment(message.comment))
   }
 
-  const name = funcname(message.id.name)
-  parts.push(`export const ${name} = $ =>`)
+  parts.push(`const ${varName} = $ =>`)
 
   if (message.value) {
     parts.push(serializePattern(message.value))
@@ -91,7 +110,7 @@ function serializeMessage(message) {
   }
 
   for (const attribute of message.attributes) {
-    parts.push(serializeAttribute(name, attribute))
+    parts.push(serializeAttribute(varName, attribute))
   }
 
   parts.push('\n')
@@ -127,13 +146,13 @@ function serializePattern(pattern) {
   const content = pattern.elements.map(serializeElement)
   const contentLength = content.reduce(
     (len, c) => len + c.length,
-    (content.length - 1) * 3
+    (content.length - 1) * 2
   )
   const startOnNewLine = contentLength > 60
   if (startOnNewLine) {
-    return `\n    ${indent(content.join(' +\n'))}`
+    return `[\n    ${indent(content.join(',\n'))}\n]`
   }
-  return ` ${content.join(' + ')}`
+  return ` [${content.join(', ')}]`
 }
 
 function serializeElement(element) {
@@ -198,8 +217,13 @@ export function serializeExpression(expr) {
 
 function serializeVariant(variant) {
   const key = serializeVariantKey(variant.key)
-  const value = indent(serializePattern(variant.value))
-  return `${key}:${value}`
+  let value
+  if (variant.value.elements.length === 1) {
+    value = ' ' + serializeElement(variant.value.elements[0])
+  } else {
+    value = serializePattern(variant.value)
+  }
+  return `${key}:${indent(value)}`
 }
 
 function serializeCallArguments(expr) {
