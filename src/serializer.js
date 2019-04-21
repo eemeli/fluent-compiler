@@ -151,7 +151,7 @@ function serializePattern(pattern) {
 function serializeElement(element) {
   switch (element.type) {
     case 'TextElement':
-      return element.value
+      return JSON.stringify(element.value)
     case 'Placeable':
       return serializePlaceable(element)
     default:
