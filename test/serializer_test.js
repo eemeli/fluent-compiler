@@ -71,8 +71,7 @@ suite('Serialize resource', function() {
           Bar
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo\\nBar"
+      export const foo = $ => "Foo\\nBar"
     `
     assert.equal(pretty(input), output)
   })
@@ -83,8 +82,7 @@ suite('Serialize resource', function() {
           Bar
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo\\nBar"
+      export const foo = $ => "Foo\\nBar"
     `
     assert.equal(pretty(input), output)
   })
@@ -228,8 +226,7 @@ suite('Serialize resource', function() {
           Baz
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo " + bar($) + "\\nBaz"
+      export const foo = $ => "Foo " + bar($) + "\\nBaz"
     `
     assert.equal(pretty(input), output)
   })
@@ -255,8 +252,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo = $ => null
-      foo.attr = $ =>
-              "Foo Attr\\nContinued"
+      foo.attr = $ => "Foo Attr\\nContinued"
     `
     assert.equal(pretty(input), output)
   })
@@ -298,8 +294,7 @@ suite('Serialize resource', function() {
           .attr-b = Foo Attr B
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo Value\\nContinued"
+      export const foo = $ => "Foo Value\\nContinued"
       foo["attr-a"] = $ => "Foo Attr A"
       foo["attr-b"] = $ => "Foo Attr B"
     `
@@ -315,8 +310,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.sel ->
+      export const foo = $ => { $.sel ->
              *[a] "A"
               [b] "B"
           }
@@ -334,8 +328,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.sel ->
+      export const foo = $ => { $.sel ->
              *[a]
                   "AAA\\nBBB"
           }
@@ -352,8 +345,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.sel ->
+      export const foo = $ => { $.sel ->
              *[a]
                   "AAA\\nBBB"
           }
@@ -369,8 +361,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.sel ->
+      export const foo = $ => { $.sel ->
              *[1] "1"
           }
     `
@@ -386,8 +377,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo " + { $.sel ->
+      export const foo = $ => "Foo " + { $.sel ->
              *[a] "A"
               [b] "B"
           }
@@ -403,8 +393,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo " + { $.sel ->
+      export const foo = $ => "Foo " + { $.sel ->
              *[a] "A"
               [b] "B"
           }
@@ -422,8 +411,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          "Foo\\nBar " + { $.sel ->
+      export const foo = $ => "Foo\\nBar " + { $.sel ->
              *[a] "A"
               [b] "B"
           }
@@ -442,8 +430,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.a ->
+      export const foo = $ => { $.a ->
              *[a]
                   { $.b ->
                      *[b] "Foo"
@@ -461,8 +448,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { $.bar ->
+      export const foo = $ => { $.bar ->
              *[a] "A"
           }
     `
@@ -477,8 +463,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { 1 ->
+      export const foo = $ => { 1 ->
              *[a] "A"
           }
     `
@@ -493,8 +478,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { "bar" ->
+      export const foo = $ => { "bar" ->
              *[a] "A"
           }
     `
@@ -509,8 +493,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ =>
-          { _bar.baz($) ->
+      export const foo = $ => { _bar.baz($) ->
              *[a] "A"
           }
     `

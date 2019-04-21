@@ -1,21 +1,7 @@
 import { funcname, propname } from './util'
 
-function includes(arr, elem) {
-  return arr.indexOf(elem) > -1
-}
-
 function indent(content) {
   return content.split('\n').join('\n    ')
-}
-
-function includesNewLine(elem) {
-  return elem.type === 'TextElement' && includes(elem.value, '\n')
-}
-
-function isSelectExpr(elem) {
-  return (
-    elem.type === 'Placeable' && elem.expression.type === 'SelectExpression'
-  )
 }
 
 export // Bit masks representing the state of the serializer.
@@ -138,16 +124,16 @@ function serializeAttribute(parentName, attribute) {
 }
 
 function serializePattern(pattern) {
-  const content = pattern.elements.map(serializeElement).join(' + ')
-  const startOnNewLine =
-    pattern.elements.some(isSelectExpr) ||
-    pattern.elements.some(includesNewLine)
-
+  const content = pattern.elements.map(serializeElement)
+  const contentLength = content.reduce(
+    (len, c) => len + c.length,
+    (content.length - 1) * 3
+  )
+  const startOnNewLine = contentLength > 60
   if (startOnNewLine) {
-    return `\n    ${indent(content)}`
+    return `\n    ${indent(content.join(' +\n'))}`
   }
-
-  return ` ${content}`
+  return ` ${content.join(' + ')}`
 }
 
 function serializeElement(element) {
