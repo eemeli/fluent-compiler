@@ -152,10 +152,6 @@ function serializePlaceable(placeable) {
   switch (expr.type) {
     case 'Placeable':
       return serializePlaceable(expr)
-    case 'SelectExpression':
-      // Special-case select expression to control the whitespace around the
-      // opening and the closing brace.
-      return `{ ${serializeExpression(expr)}}`
     default:
       return serializeExpression(expr)
   }
@@ -191,11 +187,11 @@ export function serializeExpression(expr) {
     case 'FunctionReference':
       return `${expr.id.name}${serializeCallArguments(expr.arguments)}`
     case 'SelectExpression': {
-      let out = `${serializeExpression(expr.selector)} ->`
-      for (let variant of expr.variants) {
-        out += serializeVariant(variant)
-      }
-      return `${out}\n`
+      const selector = serializeExpression(expr.selector)
+      const defaultVariant = expr.variants.find(variant => variant.default)
+      const defaultKey = JSON.stringify(serializeVariantKey(defaultVariant.key))
+      const variants = expr.variants.map(serializeVariant).join(', ')
+      return `$select(${selector}, ${defaultKey}, { ${variants} })`
     }
     case 'Placeable':
       return serializePlaceable(expr)
@@ -207,12 +203,7 @@ export function serializeExpression(expr) {
 function serializeVariant(variant) {
   const key = serializeVariantKey(variant.key)
   const value = indent(serializePattern(variant.value))
-
-  if (variant.default) {
-    return `\n   *[${key}]${value}`
-  }
-
-  return `\n    [${key}]${value}`
+  return `${key}:${value}`
 }
 
 function serializeCallArguments(expr) {

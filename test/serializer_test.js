@@ -310,10 +310,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.sel ->
-             *[a] "A"
-              [b] "B"
-          }
+      export const foo = $ => $select($.sel, "a", { a: "A", b: "B" })
     `
     assert.equal(pretty(input), output)
   })
@@ -328,10 +325,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.sel ->
-             *[a]
-                  "AAA\\nBBB"
-          }
+      export const foo = $ => $select($.sel, "a", { a: "AAA\\nBBB" })
     `
     assert.equal(pretty(input), output)
   })
@@ -345,10 +339,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.sel ->
-             *[a]
-                  "AAA\\nBBB"
-          }
+      export const foo = $ => $select($.sel, "a", { a: "AAA\\nBBB" })
     `
     assert.equal(pretty(input), output)
   })
@@ -361,9 +352,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.sel ->
-             *[1] "1"
-          }
+      export const foo = $ => $select($.sel, "1", { 1: "1" })
     `
     assert.equal(pretty(input), output)
   })
@@ -377,10 +366,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => "Foo " + { $.sel ->
-             *[a] "A"
-              [b] "B"
-          }
+      export const foo = $ => "Foo " + $select($.sel, "a", { a: "A", b: "B" })
     `
     assert.equal(pretty(input), output)
   })
@@ -393,10 +379,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => "Foo " + { $.sel ->
-             *[a] "A"
-              [b] "B"
-          }
+      export const foo = $ => "Foo " + $select($.sel, "a", { a: "A", b: "B" })
     `
     assert.equal(pretty(input), output)
   })
@@ -411,10 +394,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => "Foo\\nBar " + { $.sel ->
-             *[a] "A"
-              [b] "B"
-          }
+      export const foo = $ => "Foo\\nBar " + $select($.sel, "a", { a: "A", b: "B" })
     `
     assert.equal(pretty(input), output)
   })
@@ -430,12 +410,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.a ->
-             *[a]
-                  { $.b ->
-                     *[b] "Foo"
-                  }
-          }
+      export const foo = $ => $select($.a, "a", { a: $select($.b, "b", { b: "Foo" }) })
     `
     assert.equal(pretty(input), output)
   })
@@ -448,9 +423,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { $.bar ->
-             *[a] "A"
-          }
+      export const foo = $ => $select($.bar, "a", { a: "A" })
     `
     assert.equal(pretty(input), output)
   })
@@ -463,9 +436,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { 1 ->
-             *[a] "A"
-          }
+      export const foo = $ => $select(1, "a", { a: "A" })
     `
     assert.equal(pretty(input), output)
   })
@@ -478,9 +449,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { "bar" ->
-             *[a] "A"
-          }
+      export const foo = $ => $select("bar", "a", { a: "A" })
     `
     assert.equal(pretty(input), output)
   })
@@ -493,9 +462,7 @@ suite('Serialize resource', function() {
           }
     `
     const output = ftl`
-      export const foo = $ => { _bar.baz($) ->
-             *[a] "A"
-          }
+      export const foo = $ => $select(_bar.baz($), "a", { a: "A" })
     `
     assert.equal(pretty(input), output)
   })
@@ -724,7 +691,7 @@ suite('serializeExpression', function() {
               *[one] One
           }
     `
-    assert.equal(pretty(input), '$.num ->\n   *[one] "One"\n')
+    assert.equal(pretty(input), '$select($.num, "one", { one: "One" })')
   })
 })
 
