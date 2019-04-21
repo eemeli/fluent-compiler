@@ -136,7 +136,7 @@ function serializeAttribute(parentName, attribute) {
 }
 
 function serializePattern(pattern) {
-  const content = pattern.elements.map(serializeElement).join('')
+  const content = pattern.elements.map(serializeElement).join(' + ')
   const startOnNewLine =
     pattern.elements.some(isSelectExpr) ||
     pattern.elements.some(includesNewLine)

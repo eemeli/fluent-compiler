@@ -94,7 +94,7 @@ suite('Serialize resource', function() {
       foo = Foo { bar }
     `
     const output = ftl`
-      export const foo = "Foo "{ bar }
+      export const foo = "Foo " + { bar }
     `
     assert.equal(pretty(input), output)
   })
@@ -104,7 +104,7 @@ suite('Serialize resource', function() {
       foo = Foo { -bar }
     `
     const output = ftl`
-      export const foo = "Foo "{ _bar }
+      export const foo = "Foo " + { _bar }
     `
     assert.equal(pretty(input), output)
   })
@@ -114,7 +114,7 @@ suite('Serialize resource', function() {
       foo = Foo { $bar }
     `
     const output = ftl`
-      export const foo = "Foo "{ $bar }
+      export const foo = "Foo " + { $bar }
     `
     assert.equal(pretty(input), output)
   })
@@ -124,7 +124,7 @@ suite('Serialize resource', function() {
       foo = Foo { 1 }
     `
     const output = ftl`
-      export const foo = "Foo "{ 1 }
+      export const foo = "Foo " + { 1 }
     `
     assert.equal(pretty(input), output)
   })
@@ -134,7 +134,7 @@ suite('Serialize resource', function() {
       foo = Foo { "bar" }
     `
     const output = ftl`
-      export const foo = "Foo "{ "bar" }
+      export const foo = "Foo " + { "bar" }
     `
     assert.equal(pretty(input), output)
   })
@@ -144,7 +144,7 @@ suite('Serialize resource', function() {
       foo = Foo { bar.baz }
     `
     const output = ftl`
-      export const foo = "Foo "{ bar.baz }
+      export const foo = "Foo " + { bar.baz }
     `
     assert.equal(pretty(input), output)
   })
@@ -229,7 +229,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-          "Foo "{ bar }"\\nBaz"
+          "Foo " + { bar } + "\\nBaz"
     `
     assert.equal(pretty(input), output)
   })
@@ -387,7 +387,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-          "Foo "{ $sel ->
+          "Foo " + { $sel ->
              *[a] "A"
               [b] "B"
           }
@@ -404,7 +404,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-          "Foo "{ $sel ->
+          "Foo " + { $sel ->
              *[a] "A"
               [b] "B"
           }
@@ -423,7 +423,7 @@ suite('Serialize resource', function() {
     `
     const output = ftl`
       export const foo =
-          "Foo\\nBar "{ $sel ->
+          "Foo\\nBar " + { $sel ->
              *[a] "A"
               [b] "B"
           }
