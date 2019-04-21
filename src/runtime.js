@@ -5,11 +5,13 @@ export default function Runtime(lc) {
     const bundle = {
       format(message, args, errors) {
         const fn = typeof message === 'function' ? message : data[message]
-        if (fn) return msgString(fn(args || {}))
-        const err = new ReferenceError(`Unknown message: ${message}`)
-        if (!errors) throw err
-        errors.push(err)
-        return message
+        try {
+          if (!fn) throw new ReferenceError(`Unknown message: ${message}`)
+          return msgString(fn(args || {}))
+        } catch (err) {
+          if (errors) errors.push(err)
+          return message
+        }
       },
       getMessage: message => data[message],
       hasMessage: message => data.hasOwnProperty(message),
@@ -47,13 +49,22 @@ export default function Runtime(lc) {
   }
 
   function DATETIME($, value) {
-    const _dtf = new Intl.DateTimeFormat(lc, $)
-    return _dtf.format(value)
+    try {
+      const _dtf = new Intl.DateTimeFormat(lc, $)
+      return _dtf.format(value instanceof Date ? value : new Date(value))
+    } catch (e) {
+      return e instanceof RangeError ? 'Invalid Date' : value
+    }
   }
 
   function NUMBER($, value) {
-    const _nf = new Intl.NumberFormat(lc, $)
-    return _nf.format(value)
+    try {
+      if (isNaN(value)) return 'NaN'
+      const _nf = new Intl.NumberFormat(lc, $)
+      return _nf.format(value)
+    } catch (e) {
+      return isNaN(value) ? 'NaN' : String(value)
+    }
   }
 
   return { $messages, $select, DATETIME, NUMBER }
