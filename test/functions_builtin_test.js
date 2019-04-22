@@ -1,25 +1,18 @@
 'use strict'
 
 import assert from 'assert'
-import { FluentParser } from 'fluent-syntax'
 import fs from 'fs'
 import path from 'path'
 import tmp from 'tmp'
 
-import { FluentJSCompiler } from '../src/compiler'
+import { compile } from '../src'
 import { ftl } from './util'
 
 function transmogrify(locale, ftlSrc) {
-  const parser = new FluentParser()
-  const compiler = new FluentJSCompiler()
-
-  const ast = parser.parse(ftlSrc)
-  const jsSrc = compiler
-    .compile(locale, ast)
-    .replace(
-      '"fluent-compiler/runtime"',
-      JSON.stringify(path.resolve(__dirname, '../runtime'))
-    )
+  const jsSrc = compile(locale, ftlSrc).replace(
+    '"fluent-compiler/runtime"',
+    JSON.stringify(path.resolve(__dirname, '../runtime'))
+  )
   return new Promise((resolve, reject) => {
     tmp.file({ postfix: '.js' }, (err, path, fd) => {
       if (err) reject(err)
