@@ -2,11 +2,7 @@ import assert from 'assert'
 import { FluentParser } from 'fluent-syntax'
 import { ftl } from './util'
 
-import {
-  FluentJSCompiler,
-  compileExpression,
-  compileVariantKey
-} from '../src/compiler'
+import { FluentJSCompiler } from '../src/compiler'
 
 function trimModuleHeaders(source) {
   return source
@@ -722,24 +718,31 @@ suite('Compile resource', function() {
 })
 
 suite('compileExpression', function() {
-  let pretty
+  let compiler, pretty
 
   setup(function() {
     const parser = new FluentParser()
 
+    compiler = new FluentJSCompiler()
     pretty = function pretty(text) {
       const {
         value: {
           elements: [placeable]
         }
       } = parser.parseEntry(text)
-      return compileExpression(placeable.expression)
+      return compiler.compileExpression(placeable.expression)
     }
   })
 
   test('invalid expression', function() {
-    assert.throws(() => compileExpression(null), /Cannot read property 'type'/)
-    assert.throws(() => compileExpression({}), /Unknown expression type/)
+    assert.throws(
+      () => compiler.compileExpression(null),
+      /Cannot read property 'type'/
+    )
+    assert.throws(
+      () => compiler.compileExpression({}),
+      /Unknown expression type/
+    )
   })
 
   test('string expression', function() {
@@ -889,21 +892,28 @@ suite('Compile padding around comments', function() {
 })
 
 suite('compileVariantKey', function() {
-  let prettyVariantKey
+  let compiler, prettyVariantKey
 
   setup(function() {
     let parser = new FluentParser()
 
+    compiler = new FluentJSCompiler()
     prettyVariantKey = function(text, index) {
       let pattern = parser.parseEntry(text).value
       let variants = pattern.elements[0].expression.variants
-      return compileVariantKey(variants[index].key)
+      return compiler.compileVariantKey(variants[index].key)
     }
   })
 
   test('invalid expression', function() {
-    assert.throws(() => compileVariantKey(null), /Cannot read property 'type'/)
-    assert.throws(() => compileVariantKey({}), /Unknown variant key type/)
+    assert.throws(
+      () => compiler.compileVariantKey(null),
+      /Cannot read property 'type'/
+    )
+    assert.throws(
+      () => compiler.compileVariantKey({}),
+      /Unknown variant key type/
+    )
   })
 
   test('identifiers', function() {
