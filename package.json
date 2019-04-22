@@ -32,7 +32,8 @@
     "singleQuote": true
   },
   "dependencies": {
-    "fluent-syntax": "^0.13.0"
+    "fluent-syntax": "^0.13.0",
+    "safe-identifier": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",

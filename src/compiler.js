@@ -1,4 +1,4 @@
-import { funcname, propname } from './util'
+import { identifier, property } from 'safe-identifier'
 
 function indent(content) {
   return content.split('\n').join('\n    ')
@@ -50,7 +50,7 @@ export class FluentJSCompiler {
   compileEntry(entry, state = 0) {
     switch (entry.type) {
       case 'Message': {
-        const varName = funcname(entry.id.name)
+        const varName = identifier(entry.id.name)
         this._exports.push(compileExport(entry.id.name, varName))
         return compileMessage(entry, varName)
       }
@@ -83,7 +83,7 @@ function compileExport(id, varName) {
   if (id === varName) {
     return id
   } else {
-    return `${propname(null, id)}: ${varName}`
+    return `${property(null, id)}: ${varName}`
   }
 }
 
@@ -130,7 +130,7 @@ function compileTerm(term) {
     parts.push(compileComment(term.comment))
   }
 
-  const name = funcname(`-${term.id.name}`)
+  const name = identifier(`-${term.id.name}`)
   parts.push(`const ${name} = $ =>`)
   parts.push(compilePattern(term.value))
 
@@ -143,7 +143,7 @@ function compileTerm(term) {
 }
 
 function compileAttribute(parentName, attribute) {
-  const name = propname(parentName, attribute.id.name)
+  const name = property(parentName, attribute.id.name)
   const value = indent(compilePattern(attribute.value))
   return `\n${name} = $ =>${value}`
 }
@@ -189,19 +189,19 @@ export function compileExpression(expr) {
     case 'NumberLiteral':
       return expr.value
     case 'VariableReference':
-      return propname('$', expr.id.name)
+      return property('$', expr.id.name)
     case 'TermReference': {
-      let out = funcname(`-${expr.id.name}`)
+      let out = identifier(`-${expr.id.name}`)
       if (expr.attribute) {
-        out = propname(out, expr.attribute.name)
+        out = property(out, expr.attribute.name)
       }
       const args = compileCallArguments(expr.arguments)
       return `${out}${args}`
     }
     case 'MessageReference': {
-      let out = funcname(expr.id.name)
+      let out = identifier(expr.id.name)
       if (expr.attribute) {
-        out = propname(out, expr.attribute.name)
+        out = property(out, expr.attribute.name)
       }
       return `${out}($)`
     }
@@ -247,7 +247,7 @@ function compileCallArguments(expr) {
 }
 
 function compileNamedArgument(arg) {
-  const key = propname(null, arg.name.name)
+  const key = property(null, arg.name.name)
   const value = compileExpression(arg.value)
   return `${key}: ${value}`
 }
