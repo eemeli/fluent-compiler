@@ -731,7 +731,7 @@ suite('Compile resource', function() {
   })
 })
 
-suite('compileExpression', function() {
+suite('compiler.expression', function() {
   let compiler, pretty
 
   setup(function() {
@@ -744,19 +744,16 @@ suite('compileExpression', function() {
           elements: [placeable]
         }
       } = parser.parseEntry(text)
-      return compiler.compileExpression(placeable.expression)
+      return compiler.expression(placeable.expression)
     }
   })
 
   test('invalid expression', function() {
     assert.throws(
-      () => compiler.compileExpression(null),
+      () => compiler.expression(null),
       /Cannot read property 'type'/
     )
-    assert.throws(
-      () => compiler.compileExpression({}),
-      /Unknown expression type/
-    )
+    assert.throws(() => compiler.expression({}), /Unknown expression type/)
   })
 
   test('string expression', function() {
@@ -905,7 +902,7 @@ suite('Compile padding around comments', function() {
   })
 })
 
-suite('compileVariantKey', function() {
+suite('compiler.variantKey', function() {
   let compiler, prettyVariantKey
 
   setup(function() {
@@ -915,19 +912,16 @@ suite('compileVariantKey', function() {
     prettyVariantKey = function(text, index) {
       let pattern = parser.parseEntry(text).value
       let variants = pattern.elements[0].expression.variants
-      return compiler.compileVariantKey(variants[index].key)
+      return compiler.variantKey(variants[index].key)
     }
   })
 
   test('invalid expression', function() {
     assert.throws(
-      () => compiler.compileVariantKey(null),
+      () => compiler.variantKey(null),
       /Cannot read property 'type'/
     )
-    assert.throws(
-      () => compiler.compileVariantKey({}),
-      /Unknown variant key type/
-    )
+    assert.throws(() => compiler.variantKey({}), /Unknown variant key type/)
   })
 
   test('identifiers', function() {

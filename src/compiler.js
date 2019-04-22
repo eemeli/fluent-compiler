@@ -35,7 +35,7 @@ export class FluentJSCompiler {
 
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {
-        parts.push(this.compileEntry(entry, state))
+        parts.push(this.entry(entry, state))
         if (!(state & HAS_ENTRIES)) {
           state |= HAS_ENTRIES
         }
@@ -71,35 +71,35 @@ export class FluentJSCompiler {
     return varName
   }
 
-  compileEntry(entry, state = 0) {
+  entry(entry, state = 0) {
     switch (entry.type) {
       case 'Message':
-        return this.compileMessage(entry)
+        return this.message(entry)
       case 'Term':
-        return this.compileTerm(entry)
+        return this.term(entry)
       case 'Comment':
         if (state & HAS_ENTRIES) {
-          return `\n${this.compileComment(entry, '//')}\n`
+          return `\n${this.comment(entry, '//')}\n`
         }
-        return `${this.compileComment(entry, '//')}\n`
+        return `${this.comment(entry, '//')}\n`
       case 'GroupComment':
         if (state & HAS_ENTRIES) {
-          return `\n${this.compileComment(entry, '// ##')}\n`
+          return `\n${this.comment(entry, '// ##')}\n`
         }
-        return `${this.compileComment(entry, '// ##')}\n`
+        return `${this.comment(entry, '// ##')}\n`
       case 'ResourceComment':
         if (state & HAS_ENTRIES) {
-          return `\n${this.compileComment(entry, '// ###')}\n`
+          return `\n${this.comment(entry, '// ###')}\n`
         }
-        return `${this.compileComment(entry, '// ###')}\n`
+        return `${this.comment(entry, '// ###')}\n`
       case 'Junk':
-        return this.compileJunk(entry)
+        return this.junk(entry)
       default:
         throw new Error(`Unknown entry type: ${entry.type}`)
     }
   }
 
-  compileComment(comment, prefix = '//') {
+  comment(comment, prefix = '//') {
     const prefixed = comment.content
       .split('\n')
       .map(line => (line.length ? `${prefix} ${line}` : prefix))
@@ -108,15 +108,15 @@ export class FluentJSCompiler {
     return `${prefixed}\n`
   }
 
-  compileJunk(junk) {
+  junk(junk) {
     return junk.content.replace(/^/gm, '// ')
   }
 
-  compileMessage(message) {
+  message(message) {
     const parts = []
 
     if (message.comment) {
-      parts.push(this.compileComment(message.comment))
+      parts.push(this.comment(message.comment))
     }
 
     const varName = this.getVarName(message.id.name)
@@ -124,46 +124,46 @@ export class FluentJSCompiler {
     parts.push(`const ${varName} = $ =>`)
 
     if (message.value) {
-      parts.push(this.compilePattern(message.value))
+      parts.push(this.pattern(message.value))
     } else {
       parts.push(' null')
     }
 
     for (const attribute of message.attributes) {
-      parts.push(this.compileAttribute(varName, attribute))
+      parts.push(this.attribute(varName, attribute))
     }
 
     parts.push('\n')
     return parts.join('')
   }
 
-  compileTerm(term) {
+  term(term) {
     const parts = []
 
     if (term.comment) {
-      parts.push(this.compileComment(term.comment))
+      parts.push(this.comment(term.comment))
     }
 
     const varName = this.getVarName(`-${term.id.name}`)
     parts.push(`const ${varName} = $ =>`)
-    parts.push(this.compilePattern(term.value))
+    parts.push(this.pattern(term.value))
 
     for (const attribute of term.attributes) {
-      parts.push(this.compileAttribute(varName, attribute))
+      parts.push(this.attribute(varName, attribute))
     }
 
     parts.push('\n')
     return parts.join('')
   }
 
-  compileAttribute(parentName, attribute) {
+  attribute(parentName, attribute) {
     const name = property(parentName, attribute.id.name)
-    const value = indent(this.compilePattern(attribute.value))
+    const value = indent(this.pattern(attribute.value))
     return `\n${name} = $ =>${value}`
   }
 
-  compilePattern(pattern) {
-    const content = pattern.elements.map(this.compileElement, this)
+  pattern(pattern) {
+    const content = pattern.elements.map(this.element, this)
     const contentLength = content.reduce(
       (len, c) => len + c.length,
       (content.length - 1) * 2
@@ -175,28 +175,28 @@ export class FluentJSCompiler {
     return ` [${content.join(', ')}]`
   }
 
-  compileElement(element) {
+  element(element) {
     switch (element.type) {
       case 'TextElement':
         return JSON.stringify(element.value)
       case 'Placeable':
-        return this.compilePlaceable(element)
+        return this.placeable(element)
       default:
         throw new Error(`Unknown element type: ${element.type}`)
     }
   }
 
-  compilePlaceable(placeable) {
+  placeable(placeable) {
     const expr = placeable.expression
     switch (expr.type) {
       case 'Placeable':
-        return this.compilePlaceable(expr)
+        return this.placeable(expr)
       default:
-        return this.compileExpression(expr)
+        return this.expression(expr)
     }
   }
 
-  compileExpression(expr) {
+  expression(expr) {
     switch (expr.type) {
       case 'StringLiteral':
         return `"${expr.value}"`
@@ -209,7 +209,7 @@ export class FluentJSCompiler {
         if (expr.attribute) {
           out = property(out, expr.attribute.name)
         }
-        const args = this.compileCallArguments(expr.arguments)
+        const args = this.callArguments(expr.arguments)
         return `${out}${args}`
       }
       case 'MessageReference': {
@@ -220,55 +220,53 @@ export class FluentJSCompiler {
         return `${out}($)`
       }
       case 'FunctionReference':
-        return `${expr.id.name}${this.compileCallArguments(expr.arguments)}`
+        return `${expr.id.name}${this.callArguments(expr.arguments)}`
       case 'SelectExpression': {
-        const selector = this.compileExpression(expr.selector)
+        const selector = this.expression(expr.selector)
         const defaultVariant = expr.variants.find(variant => variant.default)
-        const defaultKey = JSON.stringify(
-          this.compileVariantKey(defaultVariant.key)
-        )
-        const variants = expr.variants.map(this.compileVariant, this).join(', ')
+        const defaultKey = JSON.stringify(this.variantKey(defaultVariant.key))
+        const variants = expr.variants.map(this.variant, this).join(', ')
         return `$select(${selector}, ${defaultKey}, { ${variants} })`
       }
       case 'Placeable':
-        return this.compilePlaceable(expr)
+        return this.placeable(expr)
       default:
         throw new Error(`Unknown expression type: ${expr.type}`)
     }
   }
 
-  compileVariant(variant) {
-    const key = this.compileVariantKey(variant.key)
+  variant(variant) {
+    const key = this.variantKey(variant.key)
     let value
     if (variant.value.elements.length === 1) {
-      value = ' ' + this.compileElement(variant.value.elements[0])
+      value = ' ' + this.element(variant.value.elements[0])
     } else {
-      value = this.compilePattern(variant.value)
+      value = this.pattern(variant.value)
     }
     return `${key}:${indent(value)}`
   }
 
-  compileCallArguments(expr) {
+  callArguments(expr) {
     let ctx = '$'
     if (expr && expr.named.length > 0) {
-      const named = expr.named.map(this.compileNamedArgument, this)
+      const named = expr.named.map(this.namedArgument, this)
       ctx = `{ ...$, ${named.join(', ')} }`
     }
     if (expr && expr.positional.length > 0) {
-      const positional = expr.positional.map(this.compileExpression, this)
+      const positional = expr.positional.map(this.expression, this)
       return `(${ctx}, ${positional.join(', ')})`
     } else {
       return `(${ctx})`
     }
   }
 
-  compileNamedArgument(arg) {
+  namedArgument(arg) {
     const key = property(null, arg.name.name)
-    const value = this.compileExpression(arg.value)
+    const value = this.expression(arg.value)
     return `${key}: ${value}`
   }
 
-  compileVariantKey(key) {
+  variantKey(key) {
     switch (key.type) {
       case 'Identifier':
         return key.name

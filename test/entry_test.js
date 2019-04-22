@@ -31,7 +31,7 @@ suite('Compile entry', function() {
       const foo = $ => ["Foo"]
     `
 
-    const message = this.compiler.compileEntry(input)
+    const message = this.compiler.entry(input)
     assert.deepEqual(message, output)
   })
 })
