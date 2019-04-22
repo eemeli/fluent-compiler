@@ -160,5 +160,54 @@ suite('Select expressions', function() {
       assert.equal(val, 'D')
       assert.equal(errs.length, 0)
     })
+
+    test('NUMBER() selector', async function() {
+      const bundle = await compileAndRequire(
+        'en-US',
+        ftl`
+          select = {NUMBER($selector) ->
+              [one] A
+             *[other] B
+          }
+        `
+      )
+      const msg = bundle.getMessage('select')
+      const val = bundle.format(msg, { selector: 1 }, errs)
+      assert.equal(val, 'A')
+      assert.equal(errs.length, 0)
+    })
+
+    test('NUMBER() selector with type: "ordinal"', async function() {
+      const bundle = await compileAndRequire(
+        'en-US',
+        ftl`
+          select = {NUMBER($selector, type: "ordinal") ->
+              [two] A
+             *[other] B
+          }
+        `
+      )
+      const msg = bundle.getMessage('select')
+      const val = bundle.format(msg, { selector: 2 }, errs)
+      assert.equal(val, 'A')
+      assert.equal(errs.length, 0)
+    })
+
+    test('NUMBER() selector with type: "ordinal" and exact case', async function() {
+      const bundle = await compileAndRequire(
+        'en-US',
+        ftl`
+          select = {NUMBER($selector, type: "ordinal") ->
+              [2] A
+              [two] B
+             *[other] C
+          }
+        `
+      )
+      const msg = bundle.getMessage('select')
+      const val = bundle.format(msg, { selector: 2 }, errs)
+      assert.equal(val, 'A')
+      assert.equal(errs.length, 0)
+    })
   })
 })

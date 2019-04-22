@@ -26,21 +26,32 @@ export default function Runtime(lc) {
     return parts.map(msgPart).join('')
   }
   function msgPart(part) {
-    if (typeof part === 'string') {
-      return part
-    } else if (typeof part === 'number') {
-      if (!nf) nf = new Intl.NumberFormat(lc)
-      return nf.format(part)
-    } else if (part instanceof Date) {
-      if (!dtf) dtf = new Intl.DateTimeFormat(lc)
-      return dtf.format(part)
-    } else if (Array.isArray(part)) {
-      return msgString(part)
+    switch (typeof part) {
+      case 'string':
+        return part
+      case 'number':
+        if (!nf) nf = new Intl.NumberFormat(lc)
+        return nf.format(part)
+      case 'object':
+        if (part instanceof Date) {
+          if (!dtf) dtf = new Intl.DateTimeFormat(lc)
+          return dtf.format(part)
+        } else if (Array.isArray(part)) {
+          return msgString(part)
+        } else if (part && part.$) {
+          return part.fmt
+        }
     }
     return String(part)
   }
 
   function $select(value, def, variants) {
+    if (value && value.$) {
+      if (variants.hasOwnProperty(value.fmt)) return variants[value.fmt]
+      const _pr = new Intl.PluralRules(lc, value.$)
+      const cat = _pr.select(value.value)
+      return variants.hasOwnProperty(cat) ? variants[cat] : variants[def]
+    }
     if (variants.hasOwnProperty(value)) return variants[value]
     if (typeof value === 'number') {
       if (!pr) pr = new Intl.PluralRules(lc)
@@ -60,12 +71,12 @@ export default function Runtime(lc) {
   }
 
   function NUMBER($, value) {
+    if (isNaN(value)) return 'NaN'
     try {
-      if (isNaN(value)) return 'NaN'
       const _nf = new Intl.NumberFormat(lc, $)
-      return _nf.format(value)
+      return { $, value, fmt: _nf.format(value) }
     } catch (e) {
-      return isNaN(value) ? 'NaN' : String(value)
+      return String(value)
     }
   }
 

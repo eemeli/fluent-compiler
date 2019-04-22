@@ -22,8 +22,9 @@ suite('Runtime', function() {
 
     test('Built-in NUMBER formatter', function() {
       const nf = new Intl.NumberFormat()
-      const n = 1.2
-      assert.equal(rt.NUMBER({}, n), nf.format(n))
+      const value = 1.2
+      const fmt = nf.format(value)
+      assert.deepEqual(rt.NUMBER({}, value), { $: {}, fmt, value })
     })
 
     test('Select with string', function() {
@@ -36,6 +37,11 @@ suite('Runtime', function() {
 
     test('Select with number', function() {
       assert.equal(rt.$select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+    })
+
+    test('Select with NUMBER()', function() {
+      const n = rt.NUMBER({}, 1)
+      assert.equal(rt.$select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
   })
 
@@ -58,12 +64,18 @@ suite('Runtime', function() {
 
     test('Built-in NUMBER formatter', function() {
       const nf = new Intl.NumberFormat('fi')
-      const n = 1.2
-      assert.equal(rt.NUMBER({}, n), nf.format(n))
+      const value = 1.2
+      const fmt = nf.format(value)
+      assert.deepEqual(rt.NUMBER({}, value), { $: {}, fmt, value })
     })
 
     test('Select with number', function() {
       assert.equal(rt.$select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+    })
+
+    test('Select with NUMBER()', function() {
+      const n = rt.NUMBER({}, 1)
+      assert.equal(rt.$select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
   })
 })
