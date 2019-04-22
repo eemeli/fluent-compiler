@@ -1,5 +1,6 @@
 'use strict'
 
+require('intl-pluralrules')
 require('@babel/register')({
   ignore: [/node_modules/],
   plugins: [

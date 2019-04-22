@@ -39,6 +39,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
     "@babel/plugin-transform-modules-commonjs": "^7.4.3",
     "@babel/register": "^7.4.0",
+    "intl-pluralrules": "^1.0.1",
     "mocha": "^6.1.4",
     "prettier": "^1.17.0",
     "tmp": "^0.1.0"
