@@ -15,7 +15,7 @@ export default function Runtime(lc) {
       },
       getMessage: message => data[message],
       hasMessage: message => data.hasOwnProperty(message),
-      locales: [lc]
+      locales: Array.isArray(lc) ? lc : [lc]
     }
     Object.defineProperty(bundle, 'messages', {
       get: () => Object.entries(data)

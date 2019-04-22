@@ -15,7 +15,7 @@ function transmogrify(locale, ftlSrc) {
 
   const ast = parser.parse(ftlSrc)
   const jsSrc = compiler
-    .compile(ast, locale)
+    .compile(locale, ast)
     .replace(
       '"fluent-compiler/runtime"',
       JSON.stringify(path.resolve(__dirname, '../runtime'))

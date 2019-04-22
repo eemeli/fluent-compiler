@@ -13,7 +13,7 @@ export class FluentJSCompiler {
     this._exports = []
   }
 
-  compile(resource, locale) {
+  compile(locales, resource) {
     this._exports = []
 
     if (resource.type !== 'Resource') {
@@ -23,7 +23,7 @@ export class FluentJSCompiler {
     let state = 0
     const parts = []
 
-    const lc = JSON.stringify(locale || undefined)
+    const lc = JSON.stringify(locales || undefined)
     parts.push('import $Runtime from "fluent-compiler/runtime"\n')
     parts.push(
       `const { $messages, $select, DATETIME, NUMBER } = $Runtime(${lc})\n\n`

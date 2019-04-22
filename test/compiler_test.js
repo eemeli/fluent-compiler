@@ -25,14 +25,20 @@ suite('Compile resource', function() {
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return trimModuleHeaders(compiler.compile(res))
+      return trimModuleHeaders(compiler.compile(undefined, res))
     }
   })
 
   test('invalid resource', function() {
     const compiler = new FluentJSCompiler()
-    assert.throws(() => compiler.compile(null), /Cannot read property 'type'/)
-    assert.throws(() => compiler.compile({}), /Unknown resource type/)
+    assert.throws(
+      () => compiler.compile(undefined, null),
+      /Cannot read property 'type'/
+    )
+    assert.throws(
+      () => compiler.compile(undefined, {}),
+      /Unknown resource type/
+    )
   })
 
   test('simple message', function() {
@@ -800,7 +806,7 @@ suite('Compile padding around comments', function() {
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return trimModuleHeaders(compiler.compile(res))
+      return trimModuleHeaders(compiler.compile(undefined, res))
     }
   })
 

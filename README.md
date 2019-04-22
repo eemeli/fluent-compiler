@@ -45,7 +45,7 @@ const compiler = new FluentJSCompiler()
 
 const src = fs.readFileSync('messages.it.ftl')
 const ast = parser.parse(src)
-const jsSrc = compiler.compile(ast, 'it')
+const jsSrc = compiler.compile('it', ast)
 fs.writeFileSync('messages.it.js', jsSrc)
 ```
 
