@@ -13,7 +13,7 @@ lets you take care of the message compilation during your build.
 [fluent]: https://projectfluent.org/
 [fluentbundle]: http://projectfluent.org/fluent.js/fluent/class/src/bundle.js~FluentBundle.html
 
-### Usage
+## Usage
 
 Fluent source file `messages.it.ftl`:
 
@@ -47,8 +47,18 @@ fs.writeFileSync('messages.it.js', js)
 Application code:
 
 ```js
-import bundle from './messages.it'
+import it from './messages.it'
 
-bundle.format('sync-signedout-account-title')
+it.format('sync-signedout-account-title')
 // 'Connetti il tuo account Firefox'
 ```
+
+## Polyfills
+
+The ES6 module output by `compile()` will probably need to itself be transpiled,
+as it uses Object Spread syntax (currently at Stage 3). Furthermore, the runtime
+may need polyfills for the Intl objects and Object.entries (used by the bundle's
+`messages` getter). In particular, [intl-pluralrules] patches some of the
+deficiencies in current browsers.
+
+[intl-pluralrules]: https://www.npmjs.com/package/intl-pluralrules
