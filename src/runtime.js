@@ -41,11 +41,13 @@ export default function Runtime(lc) {
   }
 
   function $select(value, def, variants) {
+    if (variants.hasOwnProperty(value)) return variants[value]
     if (typeof value === 'number') {
       if (!pr) pr = new Intl.PluralRules(lc)
-      value = pr.select(value)
+      const cat = pr.select(value)
+      if (variants.hasOwnProperty(cat)) return variants[cat]
     }
-    return variants.hasOwnProperty(value) ? variants[value] : variants[def]
+    return variants[def]
   }
 
   function DATETIME($, value) {
