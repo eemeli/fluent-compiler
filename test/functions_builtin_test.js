@@ -9,10 +9,8 @@ import { compile } from '../src'
 import { ftl } from './util'
 
 function transmogrify(locale, ftlSrc) {
-  const jsSrc = compile(locale, ftlSrc).replace(
-    '"fluent-compiler/runtime"',
-    JSON.stringify(path.resolve(__dirname, '../runtime'))
-  )
+  const runtimePath = path.resolve(__dirname, '../runtime')
+  const jsSrc = compile(locale, ftlSrc, { runtimePath })
   return new Promise((resolve, reject) => {
     tmp.file({ postfix: '.js' }, (err, path, fd) => {
       if (err) reject(err)

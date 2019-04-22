@@ -8,7 +8,11 @@ export // Bit masks representing the state of the compiler.
 const HAS_ENTRIES = 1
 
 export class FluentJSCompiler {
-  constructor({ withJunk = false } = {}) {
+  constructor({
+    runtimePath = 'fluent-compiler/runtime',
+    withJunk = false
+  } = {}) {
+    this.runtimePath = runtimePath
     this.withJunk = withJunk
     this._exports = []
     this._varsById = {}
@@ -28,7 +32,7 @@ export class FluentJSCompiler {
     const parts = []
 
     const lc = JSON.stringify(locales || undefined)
-    parts.push('import $Runtime from "fluent-compiler/runtime"\n')
+    parts.push(`import $Runtime from "${this.runtimePath}"\n`)
     parts.push(
       `const { $messages, $select, DATETIME, NUMBER } = $Runtime(${lc})\n\n`
     )
