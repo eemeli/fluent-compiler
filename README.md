@@ -36,16 +36,16 @@ sync-signedout-account-title =
 Build script:
 
 ```js
-import { FluentSerializer } from 'fluent-compiler'
+import { FluentJSCompiler } from 'fluent-compiler'
 import { FluentParser } from 'fluent-syntax'
 import fs from 'fs'
 
 const parser = new FluentParser()
-const serializer = new FluentSerializer()
+const compiler = new FluentJSCompiler()
 
 const src = fs.readFileSync('messages.it.ftl')
 const ast = parser.parse(src)
-const jsSrc = serializer.serialize(ast, 'it')
+const jsSrc = compiler.compile(ast, 'it')
 fs.writeFileSync('messages.it.js', jsSrc)
 ```
 

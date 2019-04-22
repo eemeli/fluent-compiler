@@ -1,11 +1,11 @@
 import assert from 'assert'
 import { ftl } from './util'
 
-import { FluentSerializer } from '../src/serializer'
+import { FluentJSCompiler } from '../src/serializer'
 
-suite('Serialize entry', function() {
+suite('Compile entry', function() {
   setup(function() {
-    this.serializer = new FluentSerializer()
+    this.compiler = new FluentJSCompiler()
   })
 
   test('simple message', function() {
@@ -31,7 +31,7 @@ suite('Serialize entry', function() {
       const foo = $ => ["Foo"]
     `
 
-    const message = this.serializer.serializeEntry(input)
+    const message = this.compiler.compileEntry(input)
     assert.deepEqual(message, output)
   })
 })

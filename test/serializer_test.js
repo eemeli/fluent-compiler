@@ -3,9 +3,9 @@ import { FluentParser } from 'fluent-syntax'
 import { ftl } from './util'
 
 import {
-  FluentSerializer,
-  serializeExpression,
-  serializeVariantKey
+  FluentJSCompiler,
+  compileExpression,
+  compileVariantKey
 } from '../src/serializer'
 
 function trimModuleHeaders(source) {
@@ -14,28 +14,25 @@ function trimModuleHeaders(source) {
     .replace(/^const { .* } = .Runtime.*\n\n/, '')
 }
 
-suite('Serialize resource', function() {
+suite('Compile resource', function() {
   let pretty
 
   setup(function() {
     const parser = new FluentParser()
-    const serializer = new FluentSerializer({
+    const compiler = new FluentJSCompiler({
       withJunk: false
     })
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return trimModuleHeaders(serializer.serialize(res))
+      return trimModuleHeaders(compiler.compile(res))
     }
   })
 
   test('invalid resource', function() {
-    const serializer = new FluentSerializer()
-    assert.throws(
-      () => serializer.serialize(null),
-      /Cannot read property 'type'/
-    )
-    assert.throws(() => serializer.serialize({}), /Unknown resource type/)
+    const compiler = new FluentJSCompiler()
+    assert.throws(() => compiler.compile(null), /Cannot read property 'type'/)
+    assert.throws(() => compiler.compile({}), /Unknown resource type/)
   })
 
   test('simple message', function() {
@@ -718,7 +715,7 @@ suite('Serialize resource', function() {
   })
 })
 
-suite('serializeExpression', function() {
+suite('compileExpression', function() {
   let pretty
 
   setup(function() {
@@ -730,16 +727,13 @@ suite('serializeExpression', function() {
           elements: [placeable]
         }
       } = parser.parseEntry(text)
-      return serializeExpression(placeable.expression)
+      return compileExpression(placeable.expression)
     }
   })
 
   test('invalid expression', function() {
-    assert.throws(
-      () => serializeExpression(null),
-      /Cannot read property 'type'/
-    )
-    assert.throws(() => serializeExpression({}), /Unknown expression type/)
+    assert.throws(() => compileExpression(null), /Cannot read property 'type'/)
+    assert.throws(() => compileExpression({}), /Unknown expression type/)
   })
 
   test('string expression', function() {
@@ -795,18 +789,18 @@ suite('serializeExpression', function() {
   })
 })
 
-suite('Serialize padding around comments', function() {
+suite('Compile padding around comments', function() {
   let pretty
 
   setup(function() {
     const parser = new FluentParser()
-    const serializer = new FluentSerializer({
+    const compiler = new FluentJSCompiler({
       withJunk: false
     })
 
     pretty = function pretty(text) {
       const res = parser.parse(text)
-      return trimModuleHeaders(serializer.serialize(res))
+      return trimModuleHeaders(compiler.compile(res))
     }
   })
 
@@ -832,8 +826,8 @@ suite('Serialize padding around comments', function() {
       export default $messages({ foo, bar })
     `
     assert.equal(pretty(input), output)
-    // Run again to make sure the same instance of the serializer doesn't keep
-    // state about how many entires is has already serialized.
+    // Run again to make sure the same instance of the compiler doesn't keep
+    // state about how many entires is has already compiled.
     assert.equal(pretty(input), output)
   })
 
@@ -888,7 +882,7 @@ suite('Serialize padding around comments', function() {
   })
 })
 
-suite('serializeVariantKey', function() {
+suite('compileVariantKey', function() {
   let prettyVariantKey
 
   setup(function() {
@@ -897,16 +891,13 @@ suite('serializeVariantKey', function() {
     prettyVariantKey = function(text, index) {
       let pattern = parser.parseEntry(text).value
       let variants = pattern.elements[0].expression.variants
-      return serializeVariantKey(variants[index].key)
+      return compileVariantKey(variants[index].key)
     }
   })
 
   test('invalid expression', function() {
-    assert.throws(
-      () => serializeVariantKey(null),
-      /Cannot read property 'type'/
-    )
-    assert.throws(() => serializeVariantKey({}), /Unknown variant key type/)
+    assert.throws(() => compileVariantKey(null), /Cannot read property 'type'/)
+    assert.throws(() => compileVariantKey({}), /Unknown variant key type/)
   })
 
   test('identifiers', function() {

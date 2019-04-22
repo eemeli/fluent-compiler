@@ -6,16 +6,16 @@ import fs from 'fs'
 import path from 'path'
 import tmp from 'tmp'
 
-import { FluentSerializer } from '../src/serializer'
+import { FluentJSCompiler } from '../src/serializer'
 import { ftl } from './util'
 
 function transmogrify(locale, ftlSrc) {
   const parser = new FluentParser()
-  const serializer = new FluentSerializer()
+  const compiler = new FluentJSCompiler()
 
   const ast = parser.parse(ftlSrc)
-  const jsSrc = serializer
-    .serialize(ast, locale)
+  const jsSrc = compiler
+    .compile(ast, locale)
     .replace(
       '"fluent-compiler/runtime"',
       JSON.stringify(path.resolve(__dirname, '../runtime'))

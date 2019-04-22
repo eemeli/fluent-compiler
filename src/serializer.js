@@ -4,16 +4,16 @@ function indent(content) {
   return content.split('\n').join('\n    ')
 }
 
-export // Bit masks representing the state of the serializer.
+export // Bit masks representing the state of the compiler.
 const HAS_ENTRIES = 1
 
-export class FluentSerializer {
+export class FluentJSCompiler {
   constructor({ withJunk = false } = {}) {
     this.withJunk = withJunk
     this._exports = []
   }
 
-  serialize(resource, locale) {
+  compile(resource, locale) {
     this._exports = []
 
     if (resource.type !== 'Resource') {
@@ -31,7 +31,7 @@ export class FluentSerializer {
 
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {
-        parts.push(this.serializeEntry(entry, state))
+        parts.push(this.compileEntry(entry, state))
         if (!(state & HAS_ENTRIES)) {
           state |= HAS_ENTRIES
         }
@@ -47,39 +47,39 @@ export class FluentSerializer {
     return parts.join('')
   }
 
-  serializeEntry(entry, state = 0) {
+  compileEntry(entry, state = 0) {
     switch (entry.type) {
       case 'Message': {
         const varName = funcname(entry.id.name)
-        this._exports.push(serializeExport(entry.id.name, varName))
-        return serializeMessage(entry, varName)
+        this._exports.push(compileExport(entry.id.name, varName))
+        return compileMessage(entry, varName)
       }
       case 'Term':
-        return serializeTerm(entry)
+        return compileTerm(entry)
       case 'Comment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '//')}\n`
+          return `\n${compileComment(entry, '//')}\n`
         }
-        return `${serializeComment(entry, '//')}\n`
+        return `${compileComment(entry, '//')}\n`
       case 'GroupComment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '// ##')}\n`
+          return `\n${compileComment(entry, '// ##')}\n`
         }
-        return `${serializeComment(entry, '// ##')}\n`
+        return `${compileComment(entry, '// ##')}\n`
       case 'ResourceComment':
         if (state & HAS_ENTRIES) {
-          return `\n${serializeComment(entry, '// ###')}\n`
+          return `\n${compileComment(entry, '// ###')}\n`
         }
-        return `${serializeComment(entry, '// ###')}\n`
+        return `${compileComment(entry, '// ###')}\n`
       case 'Junk':
-        return serializeJunk(entry)
+        return compileJunk(entry)
       default:
         throw new Error(`Unknown entry type: ${entry.type}`)
     }
   }
 }
 
-function serializeExport(id, varName) {
+function compileExport(id, varName) {
   if (id === varName) {
     return id
   } else {
@@ -87,7 +87,7 @@ function serializeExport(id, varName) {
   }
 }
 
-function serializeComment(comment, prefix = '//') {
+function compileComment(comment, prefix = '//') {
   const prefixed = comment.content
     .split('\n')
     .map(line => (line.length ? `${prefix} ${line}` : prefix))
@@ -96,60 +96,60 @@ function serializeComment(comment, prefix = '//') {
   return `${prefixed}\n`
 }
 
-function serializeJunk(junk) {
+function compileJunk(junk) {
   return junk.content.replace(/^/gm, '// ')
 }
 
-function serializeMessage(message, varName) {
+function compileMessage(message, varName) {
   const parts = []
 
   if (message.comment) {
-    parts.push(serializeComment(message.comment))
+    parts.push(compileComment(message.comment))
   }
 
   parts.push(`const ${varName} = $ =>`)
 
   if (message.value) {
-    parts.push(serializePattern(message.value))
+    parts.push(compilePattern(message.value))
   } else {
     parts.push(' null')
   }
 
   for (const attribute of message.attributes) {
-    parts.push(serializeAttribute(varName, attribute))
+    parts.push(compileAttribute(varName, attribute))
   }
 
   parts.push('\n')
   return parts.join('')
 }
 
-function serializeTerm(term) {
+function compileTerm(term) {
   const parts = []
 
   if (term.comment) {
-    parts.push(serializeComment(term.comment))
+    parts.push(compileComment(term.comment))
   }
 
   const name = funcname(`-${term.id.name}`)
   parts.push(`const ${name} = $ =>`)
-  parts.push(serializePattern(term.value))
+  parts.push(compilePattern(term.value))
 
   for (const attribute of term.attributes) {
-    parts.push(serializeAttribute(name, attribute))
+    parts.push(compileAttribute(name, attribute))
   }
 
   parts.push('\n')
   return parts.join('')
 }
 
-function serializeAttribute(parentName, attribute) {
+function compileAttribute(parentName, attribute) {
   const name = propname(parentName, attribute.id.name)
-  const value = indent(serializePattern(attribute.value))
+  const value = indent(compilePattern(attribute.value))
   return `\n${name} = $ =>${value}`
 }
 
-function serializePattern(pattern) {
-  const content = pattern.elements.map(serializeElement)
+function compilePattern(pattern) {
+  const content = pattern.elements.map(compileElement)
   const contentLength = content.reduce(
     (len, c) => len + c.length,
     (content.length - 1) * 2
@@ -161,28 +161,28 @@ function serializePattern(pattern) {
   return ` [${content.join(', ')}]`
 }
 
-function serializeElement(element) {
+function compileElement(element) {
   switch (element.type) {
     case 'TextElement':
       return JSON.stringify(element.value)
     case 'Placeable':
-      return serializePlaceable(element)
+      return compilePlaceable(element)
     default:
       throw new Error(`Unknown element type: ${element.type}`)
   }
 }
 
-function serializePlaceable(placeable) {
+function compilePlaceable(placeable) {
   const expr = placeable.expression
   switch (expr.type) {
     case 'Placeable':
-      return serializePlaceable(expr)
+      return compilePlaceable(expr)
     default:
-      return serializeExpression(expr)
+      return compileExpression(expr)
   }
 }
 
-export function serializeExpression(expr) {
+export function compileExpression(expr) {
   switch (expr.type) {
     case 'StringLiteral':
       return `"${expr.value}"`
@@ -195,7 +195,7 @@ export function serializeExpression(expr) {
       if (expr.attribute) {
         out = propname(out, expr.attribute.name)
       }
-      const args = serializeCallArguments(expr.arguments)
+      const args = compileCallArguments(expr.arguments)
       return `${out}${args}`
     }
     case 'MessageReference': {
@@ -206,53 +206,53 @@ export function serializeExpression(expr) {
       return `${out}($)`
     }
     case 'FunctionReference':
-      return `${expr.id.name}${serializeCallArguments(expr.arguments)}`
+      return `${expr.id.name}${compileCallArguments(expr.arguments)}`
     case 'SelectExpression': {
-      const selector = serializeExpression(expr.selector)
+      const selector = compileExpression(expr.selector)
       const defaultVariant = expr.variants.find(variant => variant.default)
-      const defaultKey = JSON.stringify(serializeVariantKey(defaultVariant.key))
-      const variants = expr.variants.map(serializeVariant).join(', ')
+      const defaultKey = JSON.stringify(compileVariantKey(defaultVariant.key))
+      const variants = expr.variants.map(compileVariant).join(', ')
       return `$select(${selector}, ${defaultKey}, { ${variants} })`
     }
     case 'Placeable':
-      return serializePlaceable(expr)
+      return compilePlaceable(expr)
     default:
       throw new Error(`Unknown expression type: ${expr.type}`)
   }
 }
 
-function serializeVariant(variant) {
-  const key = serializeVariantKey(variant.key)
+function compileVariant(variant) {
+  const key = compileVariantKey(variant.key)
   let value
   if (variant.value.elements.length === 1) {
-    value = ' ' + serializeElement(variant.value.elements[0])
+    value = ' ' + compileElement(variant.value.elements[0])
   } else {
-    value = serializePattern(variant.value)
+    value = compilePattern(variant.value)
   }
   return `${key}:${indent(value)}`
 }
 
-function serializeCallArguments(expr) {
+function compileCallArguments(expr) {
   let ctx = '$'
   if (expr && expr.named.length > 0) {
-    const named = expr.named.map(serializeNamedArgument)
+    const named = expr.named.map(compileNamedArgument)
     ctx = `{ ...$, ${named.join(', ')} }`
   }
   if (expr && expr.positional.length > 0) {
-    const positional = expr.positional.map(serializeExpression)
+    const positional = expr.positional.map(compileExpression)
     return `(${ctx}, ${positional.join(', ')})`
   } else {
     return `(${ctx})`
   }
 }
 
-function serializeNamedArgument(arg) {
+function compileNamedArgument(arg) {
   const key = propname(null, arg.name.name)
-  const value = serializeExpression(arg.value)
+  const value = compileExpression(arg.value)
   return `${key}: ${value}`
 }
 
-export function serializeVariantKey(key) {
+export function compileVariantKey(key) {
   switch (key.type) {
     case 'Identifier':
       return key.name
