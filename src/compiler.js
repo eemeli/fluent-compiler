@@ -11,10 +11,14 @@ export class FluentJSCompiler {
   constructor({ withJunk = false } = {}) {
     this.withJunk = withJunk
     this._exports = []
+    this._varsById = {}
+    this._varsByName = {}
   }
 
   compile(locales, resource) {
     this._exports = []
+    this._varsById = {}
+    this._varsByName = {}
 
     if (resource.type !== 'Resource') {
       throw new Error(`Unknown resource type: ${resource.type}`)
@@ -47,13 +51,30 @@ export class FluentJSCompiler {
     return parts.join('')
   }
 
+  addExport(id, varName) {
+    let exp
+    if (id === varName) {
+      exp = id
+    } else {
+      exp = `${property(null, id)}: ${varName}`
+    }
+    this._exports.push(exp)
+  }
+
+  getVarName(id, n) {
+    const prev = this._varsById[id]
+    if (prev) return prev
+    const varName = identifier(`${id}${n || ''}`)
+    if (this._varsByName[varName]) return this.getVarName(id, (n || 1) + 1)
+    this._varsById[id] = varName
+    this._varsByName[varName] = true
+    return varName
+  }
+
   compileEntry(entry, state = 0) {
     switch (entry.type) {
-      case 'Message': {
-        const varName = identifier(entry.id.name)
-        this._exports.push(this.compileExport(entry.id.name, varName))
-        return this.compileMessage(entry, varName)
-      }
+      case 'Message':
+        return this.compileMessage(entry)
       case 'Term':
         return this.compileTerm(entry)
       case 'Comment':
@@ -78,14 +99,6 @@ export class FluentJSCompiler {
     }
   }
 
-  compileExport(id, varName) {
-    if (id === varName) {
-      return id
-    } else {
-      return `${property(null, id)}: ${varName}`
-    }
-  }
-
   compileComment(comment, prefix = '//') {
     const prefixed = comment.content
       .split('\n')
@@ -99,13 +112,15 @@ export class FluentJSCompiler {
     return junk.content.replace(/^/gm, '// ')
   }
 
-  compileMessage(message, varName) {
+  compileMessage(message) {
     const parts = []
 
     if (message.comment) {
       parts.push(this.compileComment(message.comment))
     }
 
+    const varName = this.getVarName(message.id.name)
+    this.addExport(message.id.name, varName)
     parts.push(`const ${varName} = $ =>`)
 
     if (message.value) {
@@ -129,12 +144,12 @@ export class FluentJSCompiler {
       parts.push(this.compileComment(term.comment))
     }
 
-    const name = identifier(`-${term.id.name}`)
-    parts.push(`const ${name} = $ =>`)
+    const varName = this.getVarName(`-${term.id.name}`)
+    parts.push(`const ${varName} = $ =>`)
     parts.push(this.compilePattern(term.value))
 
     for (const attribute of term.attributes) {
-      parts.push(this.compileAttribute(name, attribute))
+      parts.push(this.compileAttribute(varName, attribute))
     }
 
     parts.push('\n')
@@ -190,7 +205,7 @@ export class FluentJSCompiler {
       case 'VariableReference':
         return property('$', expr.id.name)
       case 'TermReference': {
-        let out = identifier(`-${expr.id.name}`)
+        let out = this.getVarName(`-${expr.id.name}`)
         if (expr.attribute) {
           out = property(out, expr.attribute.name)
         }
@@ -198,7 +213,7 @@ export class FluentJSCompiler {
         return `${out}${args}`
       }
       case 'MessageReference': {
-        let out = identifier(expr.id.name)
+        let out = this.getVarName(expr.id.name)
         if (expr.attribute) {
           out = property(out, expr.attribute.name)
         }

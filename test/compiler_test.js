@@ -73,6 +73,20 @@ suite('Compile resource', function() {
     assert.equal(pretty(input), output)
   })
 
+  test('two messages with conflicting JS names', function() {
+    const input = ftl`
+      foo-a = Foo
+      foo_a = Bar
+    `
+    const output = ftl`
+      const foo_a = $ => ["Foo"]
+      const foo_a2 = $ => ["Bar"]
+
+      export default $messages({ "foo-a": foo_a, foo_a: foo_a2 })
+    `
+    assert.equal(pretty(input), output)
+  })
+
   test('block multiline message', function() {
     const input = ftl`
       foo =
