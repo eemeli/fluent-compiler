@@ -1,35 +1,15 @@
 'use strict'
 
 import assert from 'assert'
-import fs from 'fs'
-import path from 'path'
-import tmp from 'tmp'
 
-import { compile } from '../src'
-import { ftl } from './util'
-
-function transmogrify(locale, ftlSrc) {
-  const runtimePath = path.resolve(__dirname, '../runtime')
-  const jsSrc = compile(locale, ftlSrc, { runtimePath })
-  return new Promise((resolve, reject) => {
-    tmp.file({ postfix: '.js' }, (err, path, fd) => {
-      if (err) reject(err)
-      else {
-        fs.write(fd, jsSrc, 0, 'utf8', err => {
-          if (err) reject(err)
-          else resolve(require(path).default)
-        })
-      }
-    })
-  })
-}
+import { compileAndRequire, ftl } from './util'
 
 suite('Built-in functions', function() {
   let bundle
 
   suite('NUMBER', function() {
     suiteSetup(async () => {
-      bundle = await transmogrify(
+      bundle = await compileAndRequire(
         'en-US',
         ftl`
           num-decimal = { NUMBER($arg) }
@@ -83,7 +63,7 @@ suite('Built-in functions', function() {
 
   suite('DATETIME', function() {
     suiteSetup(async () => {
-      bundle = await transmogrify(
+      bundle = await compileAndRequire(
         'en-US',
         ftl`
           dt-default = { DATETIME($arg) }

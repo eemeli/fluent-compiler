@@ -1,4 +1,8 @@
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+
+import { compile } from '../src'
 
 function nonBlank(line) {
   return !/^\s*$/.test(line)
@@ -19,10 +23,18 @@ export function ftl(strings) {
   return `${dedented.join('\n')}\n`
 }
 
-export function readfile(path) {
-  return new Promise(function(resolve, reject) {
-    fs.readFile(path, function(err, file) {
-      return err ? reject(err) : resolve(file.toString())
+export function compileAndRequire(locale, ftlSrc) {
+  const runtimePath = path.resolve(__dirname, '../runtime')
+  const jsSrc = compile(locale, ftlSrc, { runtimePath })
+  return new Promise((resolve, reject) => {
+    tmp.file({ postfix: '.js' }, (err, path, fd) => {
+      if (err) reject(err)
+      else {
+        fs.write(fd, jsSrc, 0, 'utf8', err => {
+          if (err) reject(err)
+          else resolve(require(path).default)
+        })
+      }
     })
   })
 }
