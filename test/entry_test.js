@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { ftl } from './util'
 
-import { FluentJSCompiler } from '../src/serializer'
+import { FluentJSCompiler } from '../src/compiler'
 
 suite('Compile entry', function() {
   setup(function() {

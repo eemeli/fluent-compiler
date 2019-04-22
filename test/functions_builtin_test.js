@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import tmp from 'tmp'
 
-import { FluentJSCompiler } from '../src/serializer'
+import { FluentJSCompiler } from '../src/compiler'
 import { ftl } from './util'
 
 function transmogrify(locale, ftlSrc) {

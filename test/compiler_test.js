@@ -6,7 +6,7 @@ import {
   FluentJSCompiler,
   compileExpression,
   compileVariantKey
-} from '../src/serializer'
+} from '../src/compiler'
 
 function trimModuleHeaders(source) {
   return source
