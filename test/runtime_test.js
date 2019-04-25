@@ -14,6 +14,23 @@ suite('Runtime', function() {
       assert.equal(messages.format('foo'), 'FooBar')
     })
 
+    test('Format message attribute', function() {
+      const foo = () => ['Foo']
+      foo.bar = () => ['Bar']
+      const messages = rt.$messages({ foo })
+      assert.equal(messages.format('foo.bar'), 'Bar')
+    })
+
+    test('Compound message', function() {
+      const foo = () => ['Foo']
+      foo.bar = () => ['Bar']
+      const messages = rt.$messages({ foo })
+      assert.deepEqual(messages.compound('foo'), {
+        value: 'Foo',
+        attributes: new Map([['bar', 'Bar']])
+      })
+    })
+
     test('Built-in DATETIME formatter', function() {
       const dtf = new Intl.DateTimeFormat()
       const d = new Date()

@@ -3,17 +3,29 @@ export default function Runtime(lc) {
 
   function $messages(data) {
     const bundle = {
-      format(message, args, errors) {
-        const fn = typeof message === 'function' ? message : data[message]
+      compound(id, args, errors) {
+        const fn = data[id]
+        if (!fn) {
+          if (errors) errors.push(new ReferenceError(`Unknown message: ${id}`))
+          return { value: id, attributes: new Map() }
+        }
+        if (!args) args = {}
+        const value = msgString(fn(args))
+        const attr = Object.keys(fn).map(an => [an, msgString(fn[an](args))])
+        return { value, attributes: new Map(attr) }
+      },
+      format(id, args, errors) {
+        const [msg, attr] = id.split('.', 2)
+        let fn = data[msg]
+        if (attr) fn = fn.hasOwnProperty(attr) && fn[attr]
         try {
-          if (!fn) throw new ReferenceError(`Unknown message: ${message}`)
+          if (!fn) throw new ReferenceError(`Unknown message: ${id}`)
           return msgString(fn(args || {}))
         } catch (err) {
           if (errors) errors.push(err)
-          return message
+          return id
         }
       },
-      getMessage: message => data[message],
       hasMessage: message => data.hasOwnProperty(message),
       locales: Array.isArray(lc) ? lc : [lc]
     }
