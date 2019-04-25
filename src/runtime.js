@@ -3,6 +3,18 @@ export default function Runtime(lc) {
 
   function $messages(data) {
     const bundle = {
+      addResource(resource, opt) {
+        const ao = (opt && opt.allowOverrides) || false
+        const err = []
+        for (const [id, msg] of resource) {
+          if (!ao && data.hasOwnProperty(id)) {
+            err.push(`Attempt to override an existing message: "${id}"`)
+          } else {
+            data[id] = msg
+          }
+        }
+        return err
+      },
       compound(id, args, errors) {
         const fn = data[id]
         if (!fn) {
