@@ -3,7 +3,7 @@
 `fluent-compiler` provides a JavaScript stringifier for [Fluent]. Essentially,
 it's a transpiler that allows converting files from Fluent's `ftl` format to
 JavaScript, outputting an ES6 module that exports a [FluentBundle], albeit
-without the `addMessages` and `addResource` methods.
+without the Fluent-compiling `addMessages` method.
 
 The difference between this package and the default `fluent` is that the latter
 will need to compile your messages on the client, and is about 10kB when
