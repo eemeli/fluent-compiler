@@ -14,6 +14,7 @@ export { compile, FluentJSCompiler }
  * @param {string | Resource} source Fluent source as a string, or an AST compiled from it
  * @param {Object} [opts={}] Options passed to both FluentParser and FluentJSCompiler
  * @param {boolean} [opts.runtimePath='fluent-compiler/runtime'] Path for the runtime dependency
+ * @param {boolean} [opts.useIsolating=true] Wrap placeables with Unicode FSI & PDI isolation marks
  * @param {boolean} [opts.withSpans=true] Include spans in the parsed AST, if source is a string
  * @param {boolean} [opts.withJunk=false] Include unparsed source as comments in the output
  * @returns {string} The source of an ES6 module exporting a FluentBundle implementation of the source

@@ -16,6 +16,7 @@ suite('Compile resource', function() {
   setup(function() {
     const parser = new FluentParser()
     const compiler = new FluentJSCompiler({
+      useIsolating: false,
       withJunk: false
     })
 

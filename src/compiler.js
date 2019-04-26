@@ -1,18 +1,16 @@
 import { identifier, property } from 'safe-identifier'
 
-function indent(content) {
-  return content.split('\n').join('\n    ')
-}
-
 export // Bit masks representing the state of the compiler.
 const HAS_ENTRIES = 1
 
 export class FluentJSCompiler {
   constructor({
     runtimePath = 'fluent-compiler/runtime',
+    useIsolating = true,
     withJunk = false
   } = {}) {
     this.runtimePath = runtimePath
+    this.useIsolating = useIsolating
     this.withJunk = withJunk
     this._exports = []
     this._varsById = {}
@@ -33,9 +31,9 @@ export class FluentJSCompiler {
 
     const lc = JSON.stringify(locales || undefined)
     parts.push(`import $Runtime from "${this.runtimePath}"\n`)
-    parts.push(
-      `const { $messages, $select, DATETIME, NUMBER } = $Runtime(${lc})\n\n`
-    )
+    const rt = ['$messages', '$select', 'DATETIME', 'NUMBER']
+    if (this.useIsolating) rt.unshift('$isol')
+    parts.push(`const { ${rt.join(', ')} } = $Runtime(${lc})\n\n`)
 
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {
@@ -128,7 +126,7 @@ export class FluentJSCompiler {
     parts.push(`const ${varName} = $ =>`)
 
     if (message.value) {
-      parts.push(this.pattern(message.value))
+      parts.push(this.pattern(message.value, false))
     } else {
       parts.push(' null')
     }
@@ -150,7 +148,7 @@ export class FluentJSCompiler {
 
     const varName = this.getVarName(`-${term.id.name}`)
     parts.push(`const ${varName} = $ =>`)
-    parts.push(this.pattern(term.value))
+    parts.push(this.pattern(term.value, false))
 
     for (const attribute of term.attributes) {
       parts.push(this.attribute(varName, attribute))
@@ -162,41 +160,36 @@ export class FluentJSCompiler {
 
   attribute(parentName, attribute) {
     const name = property(parentName, attribute.id.name)
-    const value = indent(this.pattern(attribute.value))
+    const value = this.pattern(attribute.value, false)
     return `\n${name} = $ =>${value}`
   }
 
-  pattern(pattern) {
-    const content = pattern.elements.map(this.element, this)
-    const contentLength = content.reduce(
-      (len, c) => len + c.length,
-      (content.length - 1) * 2
-    )
-    const startOnNewLine = contentLength > 60
-    if (startOnNewLine) {
-      return `[\n    ${indent(content.join(',\n'))}\n]`
+  pattern(pattern, inVariant) {
+    const singleElement = pattern.elements.length === 1
+    const useIsolating = this.useIsolating && (inVariant || !singleElement)
+    const content = []
+    for (const el of pattern.elements) {
+      content.push(this.element(el, useIsolating))
+    }
+    if (inVariant && singleElement) {
+      return ` ${content[0]}`
     }
     return ` [${content.join(', ')}]`
   }
 
-  element(element) {
+  element(element, useIsolating) {
     switch (element.type) {
       case 'TextElement':
         return JSON.stringify(element.value)
-      case 'Placeable':
-        return this.placeable(element)
+      case 'Placeable': {
+        const expr = this.expression(element.expression)
+        if (useIsolating) {
+          return `$isol(${expr})`
+        }
+        return expr
+      }
       default:
         throw new Error(`Unknown element type: ${element.type}`)
-    }
-  }
-
-  placeable(placeable) {
-    const expr = placeable.expression
-    switch (expr.type) {
-      case 'Placeable':
-        return this.placeable(expr)
-      default:
-        return this.expression(expr)
     }
   }
 
@@ -233,7 +226,7 @@ export class FluentJSCompiler {
         return `$select(${selector}, ${defaultKey}, { ${variants} })`
       }
       case 'Placeable':
-        return this.placeable(expr)
+        return this.expression(expr.expression)
       default:
         throw new Error(`Unknown expression type: ${expr.type}`)
     }
@@ -241,13 +234,8 @@ export class FluentJSCompiler {
 
   variant(variant) {
     const key = this.variantKey(variant.key)
-    let value
-    if (variant.value.elements.length === 1) {
-      value = ' ' + this.element(variant.value.elements[0])
-    } else {
-      value = this.pattern(variant.value)
-    }
-    return `${key}:${indent(value)}`
+    const value = this.pattern(variant.value, true)
+    return `${key}:${value}`
   }
 
   callArguments(expr) {

@@ -1,6 +1,13 @@
 export default function Runtime(lc) {
   let dtf, nf, pr
 
+  function $isol(expr) {
+    // Unicode bidi isolation characters.
+    const FSI = '\u2068'
+    const PDI = '\u2069'
+    return Array.isArray(expr) ? [FSI].concat(expr, PDI) : [FSI, expr, PDI]
+  }
+
   function $messages(data) {
     const bundle = {
       addResource(resource, opt) {
@@ -104,5 +111,5 @@ export default function Runtime(lc) {
     }
   }
 
-  return { $messages, $select, DATETIME, NUMBER }
+  return { $isol, $messages, $select, DATETIME, NUMBER }
 }
