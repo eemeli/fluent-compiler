@@ -45,7 +45,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -69,7 +69,7 @@ suite('Compile resource', function() {
       const foo = $ => ["Foo"]
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
   })
@@ -83,7 +83,7 @@ suite('Compile resource', function() {
       const foo_a = $ => ["Foo"]
       const foo_a2 = $ => ["Bar"]
 
-      export default $messages({ "foo-a": foo_a, foo_a: foo_a2 })
+      export default $bundle({ "foo-a": foo_a, foo_a: foo_a2 })
     `
     assert.equal(pretty(input), output)
   })
@@ -97,7 +97,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo\\nBar"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -110,7 +110,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo\\nBar"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -122,7 +122,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", bar($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -134,7 +134,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", _bar($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -146,7 +146,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", $.bar]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -158,7 +158,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", 1]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -170,7 +170,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", "bar"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -182,7 +182,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", bar.baz($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -200,7 +200,7 @@ suite('Compile resource', function() {
 
       const foo = $ => ["Foo"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -216,7 +216,7 @@ suite('Compile resource', function() {
       // message comment.
       const foo = $ => ["Foo"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -242,7 +242,7 @@ suite('Compile resource', function() {
 
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
   })
@@ -262,7 +262,7 @@ suite('Compile resource', function() {
 
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
   })
@@ -276,7 +276,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", bar($), "\\nBaz"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -290,7 +290,7 @@ suite('Compile resource', function() {
       const foo = $ => null
       foo.attr = $ => ["Foo Attr"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -306,7 +306,7 @@ suite('Compile resource', function() {
       const foo = $ => null
       foo.attr = $ => ["Foo Attr\\nContinued"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -322,7 +322,7 @@ suite('Compile resource', function() {
       foo["attr-a"] = $ => ["Foo Attr A"]
       foo["attr-b"] = $ => ["Foo Attr B"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -338,7 +338,7 @@ suite('Compile resource', function() {
       foo["attr-a"] = $ => ["Foo Attr A"]
       foo["attr-b"] = $ => ["Foo Attr B"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -356,7 +356,7 @@ suite('Compile resource', function() {
       foo["attr-a"] = $ => ["Foo Attr A"]
       foo["attr-b"] = $ => ["Foo Attr B"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -372,7 +372,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.sel, "a", { a: "A", b: "B" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -389,7 +389,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.sel, "a", { a: "AAA\\nBBB" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -405,7 +405,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.sel, "a", { a: "AAA\\nBBB" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -420,7 +420,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.sel, "1", { 1: "1" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -436,7 +436,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -451,7 +451,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -468,7 +468,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Foo\\nBar ", $select($.sel, "a", { a: "A", b: "B" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -486,7 +486,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.a, "a", { a: $select($.b, "b", { b: "Foo" }) })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -501,7 +501,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select($.bar, "a", { a: "A" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -516,7 +516,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select(1, "a", { a: "A" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -531,7 +531,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select("bar", "a", { a: "A" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -546,7 +546,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [$select(_bar.baz($), "a", { a: "A" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -558,7 +558,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -570,7 +570,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($, "bar")]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -582,7 +582,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($, 1)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -594,7 +594,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($, bar($))]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -606,7 +606,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($, $.bar)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -618,7 +618,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO({ ...$, bar: 1 })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -630,7 +630,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO({ ...$, bar: "bar" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -642,7 +642,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($, bar($), baz($))]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -654,7 +654,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO({ ...$, bar: "bar", baz: "baz" })]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -666,7 +666,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO({ ...$, baz: "baz" }, bar($), 1)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -678,7 +678,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [_term($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -690,7 +690,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => [FOO($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -702,7 +702,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["\\\\", placeable($)]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -714,7 +714,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["Escaped \\" quote"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -726,7 +726,7 @@ suite('Compile resource', function() {
     const output = ftl`
       const foo = $ => ["\\u0065"]
 
-      export default $messages({ foo })
+      export default $bundle({ foo })
     `
     assert.equal(pretty(input), output)
   })
@@ -844,7 +844,7 @@ suite('Compile padding around comments', function() {
 
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
     // Run again to make sure the same instance of the compiler doesn't keep
@@ -871,7 +871,7 @@ suite('Compile padding around comments', function() {
 
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)
@@ -896,7 +896,7 @@ suite('Compile padding around comments', function() {
 
       const bar = $ => ["Bar"]
 
-      export default $messages({ foo, bar })
+      export default $bundle({ foo, bar })
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)

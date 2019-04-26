@@ -82,7 +82,7 @@ export default function Runtime(lc) {
   }
 
   return {
-    $messages(messages) {
+    $bundle(messages) {
       return new FluentBundle(messages)
     },
 

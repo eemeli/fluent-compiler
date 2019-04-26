@@ -10,21 +10,21 @@ suite('Runtime', function() {
     })
 
     test('Format message', function() {
-      const messages = rt.$messages({ foo: () => ['Foo', 'Bar'] })
+      const messages = rt.$bundle({ foo: () => ['Foo', 'Bar'] })
       assert.equal(messages.format('foo'), 'FooBar')
     })
 
     test('Format message attribute', function() {
       const foo = () => ['Foo']
       foo.bar = () => ['Bar']
-      const messages = rt.$messages({ foo })
+      const messages = rt.$bundle({ foo })
       assert.equal(messages.format('foo.bar'), 'Bar')
     })
 
     test('Compound message', function() {
       const foo = () => ['Foo']
       foo.bar = () => ['Bar']
-      const messages = rt.$messages({ foo })
+      const messages = rt.$bundle({ foo })
       assert.deepEqual(messages.compound('foo'), {
         value: 'Foo',
         attributes: new Map([['bar', 'Bar']])
@@ -69,7 +69,7 @@ suite('Runtime', function() {
     })
 
     test('Format message', function() {
-      const messages = rt.$messages({ foo: () => ['Foo', 'Bar'] })
+      const messages = rt.$bundle({ foo: () => ['Foo', 'Bar'] })
       assert.equal(messages.format('foo'), 'FooBar')
     })
 

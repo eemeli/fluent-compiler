@@ -31,7 +31,7 @@ export class FluentJSCompiler {
 
     const lc = JSON.stringify(locales || undefined)
     parts.push(`import $Runtime from "${this.runtimePath}"\n`)
-    const rt = ['$messages', '$select', 'DATETIME', 'NUMBER']
+    const rt = ['$bundle', '$select', 'DATETIME', 'NUMBER']
     if (this.useIsolating) rt.unshift('$isol')
     parts.push(`const { ${rt.join(', ')} } = $Runtime(${lc})\n\n`)
 
@@ -46,7 +46,7 @@ export class FluentJSCompiler {
 
     if (this._exports.length > 0) {
       parts.push(
-        `\nexport default $messages({ ${this._exports.join(', ')} })\n`
+        `\nexport default $bundle({ ${this._exports.join(', ')} })\n`
       )
     }
 
