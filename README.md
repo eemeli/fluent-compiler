@@ -2,16 +2,43 @@
 
 `fluent-compiler` provides a JavaScript stringifier for [Fluent]. Essentially,
 it's a transpiler that allows converting files from Fluent's `ftl` format to
-JavaScript, outputting an ES6 module that exports a [FluentBundle], albeit
-without the Fluent-compiling `addMessages` method.
+JavaScript, outputting an ES6 module that exports a [FluentBundle].
 
-The difference between this package and the default `fluent` is that the latter
-will need to compile your messages on the client, and is about 10kB when
+The difference between this package and the core `fluent` package is that the
+latter will need to compile your messages on the client, and is about 10kB when
 compressed. The runtime component of `fluent-compiler` is less than 1kB, and it
 lets you take care of the message compilation during your build.
 
 [fluent]: https://projectfluent.org/
 [fluentbundle]: http://projectfluent.org/fluent.js/fluent/class/src/bundle.js~FluentBundle.html
+
+## API
+
+```js
+import { compile } from 'fluent-compiler'
+```
+
+### `compile(locales, source, options = {}) => FluentBundle`
+
+| Param   | Type                            | Description                                                                        |
+| ------- | ------------------------------- | ---------------------------------------------------------------------------------- |
+| locales | `string | string[] | undefined` | The resource's locale identifier                                                   |
+| source  | `string | Resource`             | Fluent source as a string, or an AST compiled with the [`fluent-syntax`][1] parser |
+| options | `Object`                        | Compiler options (optional)                                                        |
+
+The [`FluentBundle`][fluentbundle] returned by `compile()` provides the same API
+as that of the `fluent` package, with the exception of the Fluent-compiling
+`addMessages` method.
+
+#### Options
+
+| Option       | Type      | Default                     | Description                                            |
+| ------------ | --------- | --------------------------- | ------------------------------------------------------ |
+| runtimePath  | `string`  | `'fluent-compiler/runtime'` | Path for the runtime dependency                        |
+| useIsolating | `boolean` | `true`                      | Wrap placeables with Unicode FSI & PDI isolation marks |
+| withJunk     | `boolean` | `false`                     | Include unparsed source as comments in the output      |
+
+[1]: https://www.npmjs.com/package/fluent-syntax
 
 ## Usage
 

@@ -15,13 +15,12 @@ export { compile, FluentJSCompiler }
  * @param {Object} [opts={}] Options passed to both FluentParser and FluentJSCompiler
  * @param {boolean} [opts.runtimePath='fluent-compiler/runtime'] Path for the runtime dependency
  * @param {boolean} [opts.useIsolating=true] Wrap placeables with Unicode FSI & PDI isolation marks
- * @param {boolean} [opts.withSpans=true] Include spans in the parsed AST, if source is a string
  * @param {boolean} [opts.withJunk=false] Include unparsed source as comments in the output
  * @returns {string} The source of an ES6 module exporting a FluentBundle implementation of the source
  */
 function compile(locales, source, opts) {
   if (typeof source === 'string') {
-    const parser = new FluentParser(opts)
+    const parser = new FluentParser()
     source = parser.parse(source)
   }
   const compiler = new FluentJSCompiler(opts)
