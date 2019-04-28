@@ -7,18 +7,18 @@ suite('Bundle', function() {
 
   suite('addResource', function() {
     suiteSetup(async function() {
-      bundle = await compileAndRequire(
-        'en-US',
-        ftl`
-          foo = Foo
-          -bar = Bar
-        `
-      )
+      bundle = await compileAndRequire('en-US', '')
+      const src = ftl`
+        foo = Foo
+        -bar = Bar
+      `
+      const resource = await compileAndRequire('en-US', src, true)
+      bundle.addResource(resource)
     })
 
     test('adds messages', function() {
-      assert.equal(new Map(bundle.messages).has('foo'), true)
-      assert.equal(new Map(bundle.messages).has('-bar'), false)
+      assert.equal(bundle.hasMessage('foo'), true)
+      assert.equal(bundle.hasMessage('-bar'), false)
     })
   })
 
@@ -28,17 +28,15 @@ suite('Bundle', function() {
     })
 
     test('addResource allowOverrides is false', async function() {
-      let bundle2 = await compileAndRequire('en-US', 'key = Bar')
-      let errors = bundle.addResource(bundle2.messages)
+      const resource = await compileAndRequire('en-US', 'key = Bar', true)
+      let errors = bundle.addResource(resource)
       assert.equal(errors.length, 1)
       assert.equal(bundle.format('key'), 'Foo')
     })
 
     test('addResource allowOverrides is true', async function() {
-      let bundle2 = await compileAndRequire('en-US', 'key = Bar')
-      let errors = bundle.addResource(bundle2.messages, {
-        allowOverrides: true
-      })
+      const resource = await compileAndRequire('en-US', 'key = Bar', true)
+      let errors = bundle.addResource(resource, { allowOverrides: true })
       assert.equal(errors.length, 0)
       assert.equal(bundle.format('key'), 'Bar')
     })

@@ -23,7 +23,7 @@ export function ftl(strings) {
   return `${dedented.join('\n')}\n`
 }
 
-export function compileAndRequire(locale, ftlSrc) {
+export function compileAndRequire(locale, ftlSrc, asResource) {
   const runtimePath = path.resolve(__dirname, '../runtime')
   const jsSrc = compile(locale, ftlSrc, { runtimePath })
   return new Promise((resolve, reject) => {
@@ -32,7 +32,10 @@ export function compileAndRequire(locale, ftlSrc) {
       else {
         fs.write(fd, jsSrc, 0, 'utf8', err => {
           if (err) reject(err)
-          else resolve(require(path).default)
+          else {
+            const { default: bundle, resource } = require(path)
+            resolve(asResource ? resource : bundle)
+          }
         })
       }
     })

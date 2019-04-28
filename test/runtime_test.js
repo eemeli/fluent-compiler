@@ -10,22 +10,23 @@ suite('Runtime', function() {
     })
 
     test('Format message', function() {
-      const messages = rt.$bundle({ foo: () => ['Foo', 'Bar'] })
-      assert.equal(messages.format('foo'), 'FooBar')
+      const value = () => ['Foo', 'Bar']
+      const bundle = rt.$bundle(new Map([['foo', { value }]]))
+      assert.equal(bundle.format('foo'), 'FooBar')
     })
 
     test('Format message attribute', function() {
-      const foo = () => ['Foo']
-      foo.bar = () => ['Bar']
-      const messages = rt.$bundle({ foo })
-      assert.equal(messages.format('foo.bar'), 'Bar')
+      const value = () => ['Foo']
+      const attr = { bar: () => ['Bar'] }
+      const bundle = rt.$bundle(new Map([['foo', { value, attr }]]))
+      assert.equal(bundle.format('foo.bar'), 'Bar')
     })
 
     test('Compound message', function() {
-      const foo = () => ['Foo']
-      foo.bar = () => ['Bar']
-      const messages = rt.$bundle({ foo })
-      assert.deepEqual(messages.compound('foo'), {
+      const value = () => ['Foo']
+      const attr = { bar: () => ['Bar'] }
+      const bundle = rt.$bundle(new Map([['foo', { value, attr }]]))
+      assert.deepEqual(bundle.compound('foo'), {
         value: 'Foo',
         attributes: new Map([['bar', 'Bar']])
       })
@@ -69,8 +70,9 @@ suite('Runtime', function() {
     })
 
     test('Format message', function() {
-      const messages = rt.$bundle({ foo: () => ['Foo', 'Bar'] })
-      assert.equal(messages.format('foo'), 'FooBar')
+      const value = () => ['Foo', 'Bar']
+      const bundle = rt.$bundle(new Map([['foo', { value }]]))
+      assert.equal(bundle.format('foo'), 'FooBar')
     })
 
     test('Built-in DATETIME formatter', function() {

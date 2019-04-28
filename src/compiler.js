@@ -1,7 +1,4 @@
-import { identifier, property } from 'safe-identifier'
-
-export // Bit masks representing the state of the compiler.
-const HAS_ENTRIES = 1
+import { property } from 'safe-identifier'
 
 export class FluentJSCompiler {
   constructor({
@@ -12,102 +9,65 @@ export class FluentJSCompiler {
     this.runtimePath = runtimePath
     this.useIsolating = useIsolating
     this.withJunk = withJunk
-    this._exports = []
-    this._varsById = {}
-    this._varsByName = {}
   }
 
   compile(locales, resource) {
-    this._exports = []
-    this._varsById = {}
-    this._varsByName = {}
-
     if (resource.type !== 'Resource') {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
 
-    let state = 0
     const parts = []
 
     const lc = JSON.stringify(locales || undefined)
-    parts.push(`import $Runtime from "${this.runtimePath}"\n`)
+    parts.push(`import $Runtime from "${this.runtimePath}"`)
     const rt = ['$bundle', '$select', 'DATETIME', 'NUMBER']
-    if (this.useIsolating) rt.unshift('$isol')
-    parts.push(`const { ${rt.join(', ')} } = $Runtime(${lc})\n\n`)
+    if (this.useIsolating) rt.splice(1, 0, '$isol')
+    parts.push(`const { ${rt.join(', ')} } = $Runtime(${lc})`)
 
+    parts.push('const R = new Map([\n')
+    let hasEntries = false
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {
-        parts.push(this.entry(entry, state))
-        if (!(state & HAS_ENTRIES)) {
-          state |= HAS_ENTRIES
-        }
+        parts.push(this.entry(entry, hasEntries))
+        if (!hasEntries) hasEntries = true
       }
     }
+    parts.push(`\n])`)
 
-    if (this._exports.length > 0) {
-      parts.push(
-        `\nexport default $bundle({ ${this._exports.join(', ')} })\n`
-      )
-    }
-
-    return parts.join('')
+    parts.push('export const resource = R')
+    parts.push(`export default $bundle(R)\n`)
+    return parts.join('\n')
   }
 
-  addExport(id, varName) {
-    let exp
-    if (id === varName) {
-      exp = id
-    } else {
-      exp = `${property(null, id)}: ${varName}`
-    }
-    this._exports.push(exp)
-  }
-
-  getVarName(id, n) {
-    const prev = this._varsById[id]
-    if (prev) return prev
-    const varName = identifier(`${id}${n || ''}`)
-    if (this._varsByName[varName]) return this.getVarName(id, (n || 1) + 1)
-    this._varsById[id] = varName
-    this._varsByName[varName] = true
-    return varName
-  }
-
-  entry(entry, state = 0) {
+  entry(entry, hasEntries = false) {
+    let comment
     switch (entry.type) {
       case 'Message':
         return this.message(entry)
       case 'Term':
         return this.term(entry)
       case 'Comment':
-        if (state & HAS_ENTRIES) {
-          return `\n${this.comment(entry, '//')}\n`
-        }
-        return `${this.comment(entry, '//')}\n`
+        comment = this.comment(entry, '//')
+        break
       case 'GroupComment':
-        if (state & HAS_ENTRIES) {
-          return `\n${this.comment(entry, '// ##')}\n`
-        }
-        return `${this.comment(entry, '// ##')}\n`
+        comment = this.comment(entry, '// ##')
+        break
       case 'ResourceComment':
-        if (state & HAS_ENTRIES) {
-          return `\n${this.comment(entry, '// ###')}\n`
-        }
-        return `${this.comment(entry, '// ###')}\n`
+        comment = this.comment(entry, '// ###')
+        break
       case 'Junk':
         return this.junk(entry)
       default:
         throw new Error(`Unknown entry type: ${entry.type}`)
     }
+    return hasEntries ? `\n${comment}\n` : `${comment}\n`
   }
 
   comment(comment, prefix = '//') {
-    const prefixed = comment.content
+    return comment.content
       .split('\n')
       .map(line => (line.length ? `${prefix} ${line}` : prefix))
       .join('\n')
-    // Add the trailing newline.
-    return `${prefixed}\n`
   }
 
   junk(junk) {
@@ -116,52 +76,49 @@ export class FluentJSCompiler {
 
   message(message) {
     const parts = []
+    if (message.comment) parts.push(this.comment(message.comment))
 
-    if (message.comment) {
-      parts.push(this.comment(message.comment))
-    }
-
-    const varName = this.getVarName(message.id.name)
-    this.addExport(message.id.name, varName)
-    parts.push(`const ${varName} = $ =>`)
-
-    if (message.value) {
-      parts.push(this.pattern(message.value, false))
-    } else {
-      parts.push(' null')
-    }
-
-    for (const attribute of message.attributes) {
-      parts.push(this.attribute(varName, attribute))
-    }
-
-    parts.push('\n')
-    return parts.join('')
+    const name = JSON.stringify(message.id.name)
+    const value = message.value ? this.pattern(message.value, false) : ' null'
+    parts.push(this.messageBody(name, value, message.attributes))
+    return parts.join('\n')
   }
 
   term(term) {
     const parts = []
+    if (term.comment) parts.push(this.comment(term.comment))
 
-    if (term.comment) {
-      parts.push(this.comment(term.comment))
-    }
-
-    const varName = this.getVarName(`-${term.id.name}`)
-    parts.push(`const ${varName} = $ =>`)
-    parts.push(this.pattern(term.value, false))
-
-    for (const attribute of term.attributes) {
-      parts.push(this.attribute(varName, attribute))
-    }
-
-    parts.push('\n')
-    return parts.join('')
+    const name = JSON.stringify(`-${term.id.name}`)
+    const value = this.pattern(term.value, false)
+    parts.push(this.messageBody(name, value, term.attributes))
+    return parts.join('\n')
   }
 
-  attribute(parentName, attribute) {
-    const name = property(parentName, attribute.id.name)
-    const value = this.pattern(attribute.value, false)
-    return `\n${name} = $ =>${value}`
+  messageBody(name, value, attributes) {
+    const attrParts = []
+    for (const attribute of attributes) {
+      const name = JSON.stringify(attribute.id.name)
+      const value = this.pattern(attribute.value, false)
+      attrParts.push(`${name}: $ =>${value}`)
+    }
+    const parts = []
+    switch (attrParts.length) {
+      case 0:
+        parts.push(`[${name}, { value: $ =>${value} }],`)
+        break
+      case 1:
+        parts.push(`[${name}, {`)
+        parts.push(`value: $ =>${value},`)
+        parts.push(`attr: { ${attrParts[0]} }\n}],`)
+        break
+      default:
+        parts.push(`[${name}, {`)
+        parts.push(`value: $ =>${value},`)
+        parts.push('attr: {')
+        parts.push('  ' + attrParts.join(',\n    '))
+        parts.push('}\n}],')
+    }
+    return parts.join('\n  ')
   }
 
   pattern(pattern, inVariant) {
@@ -202,17 +159,21 @@ export class FluentJSCompiler {
       case 'VariableReference':
         return property('$', expr.id.name)
       case 'TermReference': {
-        let out = this.getVarName(`-${expr.id.name}`)
+        let out = `R.get(${JSON.stringify(`-${expr.id.name}`)})`
         if (expr.attribute) {
-          out = property(out, expr.attribute.name)
+          out = property(`${out}.attr`, expr.attribute.name)
+        } else {
+          out = `${out}.value`
         }
         const args = this.callArguments(expr.arguments)
         return `${out}${args}`
       }
       case 'MessageReference': {
-        let out = this.getVarName(expr.id.name)
+        let out = `R.get(${JSON.stringify(expr.id.name)})`
         if (expr.attribute) {
-          out = property(out, expr.attribute.name)
+          out = property(`${out}.attr`, expr.attribute.name)
+        } else {
+          out = `${out}.value`
         }
         return `${out}($)`
       }

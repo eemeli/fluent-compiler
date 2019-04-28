@@ -5,9 +5,21 @@ import { ftl } from './util'
 import { FluentJSCompiler } from '../src/compiler'
 
 function trimModuleHeaders(source) {
+  const header = ftl`
+    import .Runtime from .*
+    const { .* } = .Runtime.*
+    const R = new Map\\(\\[
+
+  `
+  const footer = ftl`
+
+    ]\\)
+    export const resource = R
+    export default .bundle\\(R\\)
+  `
   return source
-    .replace(/^import .Runtime from .*\n/, '')
-    .replace(/^const { .* } = .Runtime.*\n\n/, '')
+    .replace(new RegExp('^' + header), '')
+    .replace(new RegExp(footer + '$'), '')
 }
 
 suite('Compile resource', function() {
@@ -43,9 +55,7 @@ suite('Compile resource', function() {
       foo = Foo
     `
     const output = ftl`
-      const foo = $ => ["Foo"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -55,7 +65,7 @@ suite('Compile resource', function() {
       -foo = Foo
     `
     const output = ftl`
-      const _foo = $ => ["Foo"]
+      ["-foo", { value: $ => ["Foo"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -66,10 +76,8 @@ suite('Compile resource', function() {
       bar = Bar
     `
     const output = ftl`
-      const foo = $ => ["Foo"]
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["foo", { value: $ => ["Foo"] }],
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -80,10 +88,8 @@ suite('Compile resource', function() {
       foo_a = Bar
     `
     const output = ftl`
-      const foo_a = $ => ["Foo"]
-      const foo_a2 = $ => ["Bar"]
-
-      export default $bundle({ "foo-a": foo_a, foo_a: foo_a2 })
+      ["foo-a", { value: $ => ["Foo"] }],
+      ["foo_a", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -95,9 +101,7 @@ suite('Compile resource', function() {
           Bar
     `
     const output = ftl`
-      const foo = $ => ["Foo\\nBar"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo\\nBar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -108,9 +112,7 @@ suite('Compile resource', function() {
           Bar
     `
     const output = ftl`
-      const foo = $ => ["Foo\\nBar"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo\\nBar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -120,9 +122,7 @@ suite('Compile resource', function() {
       foo = Foo { bar }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", bar($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", R.get("bar").value($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -132,9 +132,7 @@ suite('Compile resource', function() {
       foo = Foo { -bar }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", _bar($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", R.get("-bar").value($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -144,9 +142,7 @@ suite('Compile resource', function() {
       foo = Foo { $bar }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", $.bar]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", $.bar] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -156,9 +152,7 @@ suite('Compile resource', function() {
       foo = Foo { 1 }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", 1]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", 1] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -168,9 +162,7 @@ suite('Compile resource', function() {
       foo = Foo { "bar" }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", "bar"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", "bar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -180,9 +172,7 @@ suite('Compile resource', function() {
       foo = Foo { bar.baz }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", bar.baz($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", R.get("bar").attr.baz($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -198,9 +188,7 @@ suite('Compile resource', function() {
       // ### A multiline
       // ### resource comment.
 
-      const foo = $ => ["Foo"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -214,9 +202,7 @@ suite('Compile resource', function() {
     const output = ftl`
       // A multiline
       // message comment.
-      const foo = $ => ["Foo"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -233,16 +219,14 @@ suite('Compile resource', function() {
       bar = Bar
     `
     const output = ftl`
-      const foo = $ => ["Foo"]
+      ["foo", { value: $ => ["Foo"] }],
 
       // ## Comment Header
       // ##
       // ## A multiline
       // ## group comment.
 
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -256,13 +240,11 @@ suite('Compile resource', function() {
       bar = Bar
     `
     const output = ftl`
-      const foo = $ => ["Foo"]
+      ["foo", { value: $ => ["Foo"] }],
 
       // A Standalone Comment
 
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -274,9 +256,7 @@ suite('Compile resource', function() {
           Baz
     `
     const output = ftl`
-      const foo = $ => ["Foo ", bar($), "\\nBaz"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", R.get("bar").value($), "\\nBaz"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -287,10 +267,10 @@ suite('Compile resource', function() {
           .attr = Foo Attr
     `
     const output = ftl`
-      const foo = $ => null
-      foo.attr = $ => ["Foo Attr"]
-
-      export default $bundle({ foo })
+      ["foo", {
+        value: $ => null,
+        attr: { "attr": $ => ["Foo Attr"] }
+      }],
     `
     assert.equal(pretty(input), output)
   })
@@ -303,10 +283,10 @@ suite('Compile resource', function() {
               Continued
     `
     const output = ftl`
-      const foo = $ => null
-      foo.attr = $ => ["Foo Attr\\nContinued"]
-
-      export default $bundle({ foo })
+      ["foo", {
+        value: $ => null,
+        attr: { "attr": $ => ["Foo Attr\\nContinued"] }
+      }],
     `
     assert.equal(pretty(input), output)
   })
@@ -318,11 +298,13 @@ suite('Compile resource', function() {
           .attr-b = Foo Attr B
     `
     const output = ftl`
-      const foo = $ => null
-      foo["attr-a"] = $ => ["Foo Attr A"]
-      foo["attr-b"] = $ => ["Foo Attr B"]
-
-      export default $bundle({ foo })
+      ["foo", {
+        value: $ => null,
+        attr: {
+          "attr-a": $ => ["Foo Attr A"],
+          "attr-b": $ => ["Foo Attr B"]
+        }
+      }],
     `
     assert.equal(pretty(input), output)
   })
@@ -334,11 +316,13 @@ suite('Compile resource', function() {
           .attr-b = Foo Attr B
     `
     const output = ftl`
-      const foo = $ => ["Foo Value"]
-      foo["attr-a"] = $ => ["Foo Attr A"]
-      foo["attr-b"] = $ => ["Foo Attr B"]
-
-      export default $bundle({ foo })
+      ["foo", {
+        value: $ => ["Foo Value"],
+        attr: {
+          "attr-a": $ => ["Foo Attr A"],
+          "attr-b": $ => ["Foo Attr B"]
+        }
+      }],
     `
     assert.equal(pretty(input), output)
   })
@@ -352,11 +336,13 @@ suite('Compile resource', function() {
           .attr-b = Foo Attr B
     `
     const output = ftl`
-      const foo = $ => ["Foo Value\\nContinued"]
-      foo["attr-a"] = $ => ["Foo Attr A"]
-      foo["attr-b"] = $ => ["Foo Attr B"]
-
-      export default $bundle({ foo })
+      ["foo", {
+        value: $ => ["Foo Value\\nContinued"],
+        attr: {
+          "attr-a": $ => ["Foo Attr A"],
+          "attr-b": $ => ["Foo Attr B"]
+        }
+      }],
     `
     assert.equal(pretty(input), output)
   })
@@ -370,9 +356,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.sel, "a", { a: "A", b: "B" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -387,9 +371,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.sel, "a", { a: "AAA\\nBBB" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.sel, "a", { a: "AAA\\nBBB" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -403,9 +385,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.sel, "a", { a: "AAA\\nBBB" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.sel, "a", { a: "AAA\\nBBB" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -418,9 +398,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.sel, "1", { 1: "1" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.sel, "1", { 1: "1" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -434,9 +412,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -449,9 +425,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -466,9 +440,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => ["Foo\\nBar ", $select($.sel, "a", { a: "A", b: "B" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Foo\\nBar ", $select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -484,9 +456,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.a, "a", { a: $select($.b, "b", { b: "Foo" }) })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.a, "a", { a: $select($.b, "b", { b: "Foo" }) })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -499,9 +469,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select($.bar, "a", { a: "A" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select($.bar, "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -514,9 +482,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select(1, "a", { a: "A" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select(1, "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -529,9 +495,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select("bar", "a", { a: "A" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select("bar", "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -544,9 +508,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      const foo = $ => [$select(_bar.baz($), "a", { a: "A" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [$select(R.get("-bar").attr.baz($), "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -556,9 +518,7 @@ suite('Compile resource', function() {
       foo = { FOO() }
     `
     const output = ftl`
-      const foo = $ => [FOO($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -568,9 +528,7 @@ suite('Compile resource', function() {
       foo = { FOO("bar") }
     `
     const output = ftl`
-      const foo = $ => [FOO($, "bar")]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($, "bar")] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -580,9 +538,7 @@ suite('Compile resource', function() {
       foo = { FOO(1) }
     `
     const output = ftl`
-      const foo = $ => [FOO($, 1)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($, 1)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -592,9 +548,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar) }
     `
     const output = ftl`
-      const foo = $ => [FOO($, bar($))]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($, R.get("bar").value($))] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -604,9 +558,7 @@ suite('Compile resource', function() {
       foo = { FOO($bar) }
     `
     const output = ftl`
-      const foo = $ => [FOO($, $.bar)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($, $.bar)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -616,9 +568,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar: 1) }
     `
     const output = ftl`
-      const foo = $ => [FOO({ ...$, bar: 1 })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO({ ...$, bar: 1 })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -628,9 +578,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar: "bar") }
     `
     const output = ftl`
-      const foo = $ => [FOO({ ...$, bar: "bar" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO({ ...$, bar: "bar" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -640,9 +588,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar, baz) }
     `
     const output = ftl`
-      const foo = $ => [FOO($, bar($), baz($))]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($, R.get("bar").value($), R.get("baz").value($))] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -652,9 +598,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar: "bar", baz: "baz") }
     `
     const output = ftl`
-      const foo = $ => [FOO({ ...$, bar: "bar", baz: "baz" })]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO({ ...$, bar: "bar", baz: "baz" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -664,9 +608,7 @@ suite('Compile resource', function() {
       foo = { FOO(bar, 1, baz: "baz") }
     `
     const output = ftl`
-      const foo = $ => [FOO({ ...$, baz: "baz" }, bar($), 1)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO({ ...$, baz: "baz" }, R.get("bar").value($), 1)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -676,9 +618,7 @@ suite('Compile resource', function() {
       foo = { -term() }
     `
     const output = ftl`
-      const foo = $ => [_term($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [R.get("-term").value($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -688,9 +628,7 @@ suite('Compile resource', function() {
       foo = {{ FOO() }}
     `
     const output = ftl`
-      const foo = $ => [FOO($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => [FOO($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -700,9 +638,7 @@ suite('Compile resource', function() {
       foo = \\{ placeable }
     `
     const output = ftl`
-      const foo = $ => ["\\\\", placeable($)]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["\\\\", R.get("placeable").value($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -712,9 +648,7 @@ suite('Compile resource', function() {
       foo = { "Escaped \\" quote" }
     `
     const output = ftl`
-      const foo = $ => ["Escaped \\" quote"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["Escaped \\" quote"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -724,9 +658,7 @@ suite('Compile resource', function() {
       foo = { "\\u0065" }
     `
     const output = ftl`
-      const foo = $ => ["\\u0065"]
-
-      export default $bundle({ foo })
+      ["foo", { value: $ => ["\\u0065"] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -775,7 +707,7 @@ suite('compiler.expression', function() {
     const input = ftl`
       foo = { msg }
     `
-    assert.equal(pretty(input), 'msg($)')
+    assert.equal(pretty(input), 'R.get("msg").value($)')
   })
 
   test('external argument', function() {
@@ -789,7 +721,7 @@ suite('compiler.expression', function() {
     const input = ftl`
       foo = { msg.attr }
     `
-    assert.equal(pretty(input), 'msg.attr($)')
+    assert.equal(pretty(input), 'R.get("msg").attr.attr($)')
   })
 
   test('call expression', function() {
@@ -838,13 +770,11 @@ suite('Compile padding around comments', function() {
     const output = ftl`
       // Comment A
 
-      const foo = $ => ["Foo"]
+      ["foo", { value: $ => ["Foo"] }],
 
       // Comment B
 
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
     // Run again to make sure the same instance of the compiler doesn't keep
@@ -865,13 +795,11 @@ suite('Compile padding around comments', function() {
     const output = ftl`
       // ## Group A
 
-      const foo = $ => ["Foo"]
+      ["foo", { value: $ => ["Foo"] }],
 
       // ## Group B
 
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)
@@ -890,13 +818,11 @@ suite('Compile padding around comments', function() {
     const output = ftl`
       // ### Resource Comment A
 
-      const foo = $ => ["Foo"]
+      ["foo", { value: $ => ["Foo"] }],
 
       // ### Resource Comment B
 
-      const bar = $ => ["Bar"]
-
-      export default $bundle({ foo, bar })
+      ["bar", { value: $ => ["Bar"] }],
     `
     assert.equal(pretty(input), output)
     assert.equal(pretty(input), output)

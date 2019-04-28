@@ -26,49 +26,50 @@ export default function Runtime(lc) {
   }
 
   class FluentBundle {
-    constructor(messages) {
-      this._messages = messages
-    }
-
-    get locales() {
-      return Array.isArray(lc) ? lc : [lc]
-    }
-
-    get messages() {
-      return Object.entries(this._messages)
+    constructor(resource) {
+      this._res = resource
+      this.locales = Array.isArray(lc) ? lc : [lc]
     }
 
     addResource(resource, opt) {
       const ao = (opt && opt.allowOverrides) || false
       const err = []
       for (const [id, msg] of resource) {
-        if (!ao && this._messages.hasOwnProperty(id)) {
+        if (!ao && this._res.has(id)) {
           err.push(`Attempt to override an existing message: "${id}"`)
         } else {
-          this._messages[id] = msg
+          this._res.set(id, msg)
         }
       }
       return err
     }
 
     compound(id, args, errors) {
-      const fn = this._messages[id]
-      if (!fn) {
-        if (errors) errors.push(new ReferenceError(`Unknown message: ${id}`))
+      const msg = this._res.get(id)
+      try {
+        if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
+        if (!args) args = {}
+        const value = msgString(msg.value(args))
+        const attributes = new Map()
+        if (msg.attr) {
+          for (const [attr, fn] of Object.entries(msg.attr)) {
+            attributes.set(attr, msgString(fn(args)))
+          }
+        }
+        return { value, attributes }
+      } catch (err) {
+        if (errors) errors.push(err)
         return { value: id, attributes: new Map() }
       }
-      if (!args) args = {}
-      const value = msgString(fn(args))
-      const attr = Object.keys(fn).map(an => [an, msgString(fn[an](args))])
-      return { value, attributes: new Map(attr) }
     }
 
     format(id, args, errors) {
-      const [msg, attr] = id.split('.', 2)
-      let fn = this._messages[msg]
-      if (attr) fn = fn.hasOwnProperty(attr) && fn[attr]
+      const [msgId, attrId] = id.split('.', 2)
+      const msg = this._res.get(msgId)
       try {
-        if (!fn) throw new ReferenceError(`Unknown message: ${id}`)
+        if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
+        const fn = attrId ? msg.attr && msg.attr[attrId] : msg.value
+        if (!fn) throw new ReferenceError(`No attribute called: ${attrId}`)
         return msgString(fn(args || {}))
       } catch (err) {
         if (errors) errors.push(err)
@@ -77,7 +78,7 @@ export default function Runtime(lc) {
     }
 
     hasMessage(message) {
-      return this._messages.hasOwnProperty(message)
+      return message[0] !== '-' && this._res.has(message)
     }
   }
 

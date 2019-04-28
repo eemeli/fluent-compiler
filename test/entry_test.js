@@ -27,11 +27,8 @@ suite('Compile entry', function() {
         name: 'foo'
       }
     }
-    const output = ftl`
-      const foo = $ => ["Foo"]
-    `
-
+    const output = '["foo", { value: $ => ["Foo"] }],'
     const message = this.compiler.entry(input)
-    assert.deepEqual(message, output)
+    assert.equal(message, output)
   })
 })
