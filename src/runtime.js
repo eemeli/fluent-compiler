@@ -83,18 +83,18 @@ export default function Runtime(lc) {
   }
 
   return {
-    $bundle(messages) {
+    bundle(messages) {
       return new FluentBundle(messages)
     },
 
-    $isol(expr) {
+    isol(expr) {
       // Unicode bidi isolation characters.
       const FSI = '\u2068'
       const PDI = '\u2069'
       return Array.isArray(expr) ? [FSI].concat(expr, PDI) : [FSI, expr, PDI]
     },
 
-    $select(value, def, variants) {
+    select(value, def, variants) {
       if (value && value.$) {
         if (variants.hasOwnProperty(value.fmt)) return variants[value.fmt]
         const _pr = new Intl.PluralRules(lc, value.$)

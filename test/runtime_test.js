@@ -11,21 +11,21 @@ suite('Runtime', function() {
 
     test('Format message', function() {
       const value = () => ['Foo', 'Bar']
-      const bundle = rt.$bundle(new Map([['foo', { value }]]))
+      const bundle = rt.bundle(new Map([['foo', { value }]]))
       assert.equal(bundle.format('foo'), 'FooBar')
     })
 
     test('Format message attribute', function() {
       const value = () => ['Foo']
       const attr = { bar: () => ['Bar'] }
-      const bundle = rt.$bundle(new Map([['foo', { value, attr }]]))
+      const bundle = rt.bundle(new Map([['foo', { value, attr }]]))
       assert.equal(bundle.format('foo.bar'), 'Bar')
     })
 
     test('Compound message', function() {
       const value = () => ['Foo']
       const attr = { bar: () => ['Bar'] }
-      const bundle = rt.$bundle(new Map([['foo', { value, attr }]]))
+      const bundle = rt.bundle(new Map([['foo', { value, attr }]]))
       assert.deepEqual(bundle.compound('foo'), {
         value: 'Foo',
         attributes: new Map([['bar', 'Bar']])
@@ -46,20 +46,20 @@ suite('Runtime', function() {
     })
 
     test('Select with string', function() {
-      assert.equal(rt.$select('foo', 'bar', { foo: 'Foo' }), 'Foo')
+      assert.equal(rt.select('foo', 'bar', { foo: 'Foo' }), 'Foo')
     })
 
     test('Select: fall back to default variant', function() {
-      assert.equal(rt.$select('bar', 'foo', { foo: 'Foo' }), 'Foo')
+      assert.equal(rt.select('bar', 'foo', { foo: 'Foo' }), 'Foo')
     })
 
     test('Select with number', function() {
-      assert.equal(rt.$select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+      assert.equal(rt.select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
 
     test('Select with NUMBER()', function() {
       const n = rt.NUMBER({}, 1)
-      assert.equal(rt.$select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+      assert.equal(rt.select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
   })
 
@@ -71,7 +71,7 @@ suite('Runtime', function() {
 
     test('Format message', function() {
       const value = () => ['Foo', 'Bar']
-      const bundle = rt.$bundle(new Map([['foo', { value }]]))
+      const bundle = rt.bundle(new Map([['foo', { value }]]))
       assert.equal(bundle.format('foo'), 'FooBar')
     })
 
@@ -89,12 +89,12 @@ suite('Runtime', function() {
     })
 
     test('Select with number', function() {
-      assert.equal(rt.$select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+      assert.equal(rt.select(1, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
 
     test('Select with NUMBER()', function() {
       const n = rt.NUMBER({}, 1)
-      assert.equal(rt.$select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
+      assert.equal(rt.select(n, 'other', { one: 'Foo', other: 'Bar' }), 'Foo')
     })
   })
 })

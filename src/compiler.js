@@ -19,10 +19,10 @@ export class FluentJSCompiler {
     const parts = []
 
     const lc = JSON.stringify(locales || undefined)
-    parts.push(`import $Runtime from "${this.runtimePath}"`)
-    const rt = ['$bundle', '$select', 'DATETIME', 'NUMBER']
-    if (this.useIsolating) rt.splice(1, 0, '$isol')
-    parts.push(`const { ${rt.join(', ')} } = $Runtime(${lc})`)
+    parts.push(`import Runtime from "${this.runtimePath}"`)
+    const rt = ['bundle', 'select', 'DATETIME', 'NUMBER']
+    if (this.useIsolating) rt.splice(1, 0, 'isol')
+    parts.push(`const { ${rt.join(', ')} } = Runtime(${lc})`)
 
     parts.push('const R = new Map([\n')
     let hasEntries = false
@@ -35,7 +35,7 @@ export class FluentJSCompiler {
     parts.push(`\n])`)
 
     parts.push('export const resource = R')
-    parts.push(`export default $bundle(R)\n`)
+    parts.push(`export default bundle(R)\n`)
     return parts.join('\n')
   }
 
@@ -141,7 +141,7 @@ export class FluentJSCompiler {
       case 'Placeable': {
         const expr = this.expression(element.expression)
         if (useIsolating) {
-          return `$isol(${expr})`
+          return `isol(${expr})`
         }
         return expr
       }
@@ -184,7 +184,7 @@ export class FluentJSCompiler {
         const defaultVariant = expr.variants.find(variant => variant.default)
         const defaultKey = JSON.stringify(this.variantKey(defaultVariant.key))
         const variants = expr.variants.map(this.variant, this).join(', ')
-        return `$select(${selector}, ${defaultKey}, { ${variants} })`
+        return `select(${selector}, ${defaultKey}, { ${variants} })`
       }
       case 'Placeable':
         return this.expression(expr.expression)

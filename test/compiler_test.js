@@ -6,8 +6,8 @@ import { FluentJSCompiler } from '../src/compiler'
 
 function trimModuleHeaders(source) {
   const header = ftl`
-    import .Runtime from .*
-    const { .* } = .Runtime.*
+    import Runtime from .*
+    const { .* } = Runtime.*
     const R = new Map\\(\\[
 
   `
@@ -15,7 +15,7 @@ function trimModuleHeaders(source) {
 
     ]\\)
     export const resource = R
-    export default .bundle\\(R\\)
+    export default bundle\\(R\\)
   `
   return source
     .replace(new RegExp('^' + header), '')
@@ -356,7 +356,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.sel, "a", { a: "A", b: "B" })] }],
+      ["foo", { value: $ => [select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -371,7 +371,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.sel, "a", { a: "AAA\\nBBB" })] }],
+      ["foo", { value: $ => [select($.sel, "a", { a: "AAA\\nBBB" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -385,7 +385,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.sel, "a", { a: "AAA\\nBBB" })] }],
+      ["foo", { value: $ => [select($.sel, "a", { a: "AAA\\nBBB" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -398,7 +398,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.sel, "1", { 1: "1" })] }],
+      ["foo", { value: $ => [select($.sel, "1", { 1: "1" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -412,7 +412,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })] }],
+      ["foo", { value: $ => ["Foo ", select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -425,7 +425,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => ["Foo ", $select($.sel, "a", { a: "A", b: "B" })] }],
+      ["foo", { value: $ => ["Foo ", select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -440,7 +440,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => ["Foo\\nBar ", $select($.sel, "a", { a: "A", b: "B" })] }],
+      ["foo", { value: $ => ["Foo\\nBar ", select($.sel, "a", { a: "A", b: "B" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -456,7 +456,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.a, "a", { a: $select($.b, "b", { b: "Foo" }) })] }],
+      ["foo", { value: $ => [select($.a, "a", { a: select($.b, "b", { b: "Foo" }) })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -469,7 +469,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select($.bar, "a", { a: "A" })] }],
+      ["foo", { value: $ => [select($.bar, "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -482,7 +482,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select(1, "a", { a: "A" })] }],
+      ["foo", { value: $ => [select(1, "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -495,7 +495,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select("bar", "a", { a: "A" })] }],
+      ["foo", { value: $ => [select("bar", "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -508,7 +508,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [$select(R.get("-bar").attr.baz($), "a", { a: "A" })] }],
+      ["foo", { value: $ => [select(R.get("-bar").attr.baz($), "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -738,7 +738,7 @@ suite('compiler.expression', function() {
               *[one] One
           }
     `
-    assert.equal(pretty(input), '$select($.num, "one", { one: "One" })')
+    assert.equal(pretty(input), 'select($.num, "one", { one: "One" })')
   })
 })
 
