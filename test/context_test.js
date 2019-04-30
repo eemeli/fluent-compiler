@@ -84,4 +84,69 @@ suite('Bundle', function() {
       assert.equal(bundle.hasMessage('err4'), false)
     })
   })
+
+  suite('format', function() {
+    suiteSetup(async function() {
+      bundle = await compileAndRequire(
+        'en-US',
+        ftl`
+          foo = Foo
+          bar =
+              .attr = Bar Attr
+          -term = Term
+
+          # ERROR No value.
+          err1 =
+          # ERROR Broken value.
+          err2 = {}
+          # ERROR No attribute value.
+          err3 =
+              .attr =
+          # ERROR Broken attribute value.
+          err4 =
+              .attr1 = Attr
+              .attr2 = {}
+        `
+      )
+    })
+
+    test('returns value only for public messages', function() {
+      const errors = []
+      assert.equal(bundle.format('foo', errors), 'Foo')
+      assert.equal(errors.length, 0)
+    })
+
+    test('returns id for terms and missing messages', function() {
+      let errors = []
+      assert.equal(bundle.format('-term', {}, errors), '-term')
+      console.log(errors)
+      assert.equal(errors[0].message, 'Unknown message: -term')
+
+      errors = []
+      assert.equal(bundle.format('missing', {}, errors), 'missing')
+      assert.equal(errors[0].message, 'Unknown message: missing')
+
+      errors = []
+      assert.equal(bundle.format('-missing', {}, errors), '-missing')
+      assert.equal(errors[0].message, 'Unknown message: -missing')
+    })
+
+    test('returns id for broken messages', function() {
+      let errors = []
+      assert.equal(bundle.format('err1', {}, errors), 'err1')
+      assert.ok(errors[0] instanceof ReferenceError)
+
+      errors = []
+      assert.equal(bundle.format('err2', {}, errors), 'err2')
+      assert.ok(errors[0] instanceof ReferenceError)
+
+      errors = []
+      assert.equal(bundle.format('err3', {}, errors), 'err3')
+      assert.ok(errors[0] instanceof ReferenceError)
+
+      errors = []
+      assert.equal(bundle.format('err4', {}, errors), 'err4')
+      assert.ok(errors[0] instanceof ReferenceError)
+    })
+  })
 })

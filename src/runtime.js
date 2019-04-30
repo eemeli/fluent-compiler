@@ -45,7 +45,7 @@ export default function Runtime(lc) {
     }
 
     compound(id, args, errors) {
-      const msg = this._res.get(id)
+      const msg = id[0] !== '-' && this._res.get(id)
       try {
         if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
         if (!args) args = {}
@@ -65,7 +65,7 @@ export default function Runtime(lc) {
 
     format(id, args, errors) {
       const [msgId, attrId] = id.split('.', 2)
-      const msg = this._res.get(msgId)
+      const msg = id[0] !== '-' && this._res.get(msgId)
       try {
         if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
         const fn = attrId ? msg.attr && msg.attr[attrId] : msg.value
