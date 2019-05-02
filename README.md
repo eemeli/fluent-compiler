@@ -2,15 +2,16 @@
 
 `fluent-compiler` provides a JavaScript stringifier for [Fluent]. Essentially,
 it's a transpiler that allows converting files from Fluent's `ftl` format to
-JavaScript, outputting an ES6 module that exports a [FluentBundle].
+JavaScript, outputting an ES6 module that exports a [FluentBundle][bundle].
 
 The difference between this package and the core `fluent` package is that the
 latter will need to compile your messages on the client, and is about 10kB when
-compressed. The runtime component of `fluent-compiler` is less than 1kB, and it
+compressed. The runtime component of `fluent-compiler` is about 1.2kB, and it
 lets you take care of the message compilation during your build.
 
 [fluent]: https://projectfluent.org/
-[fluentbundle]: http://projectfluent.org/fluent.js/fluent/class/src/bundle.js~FluentBundle.html
+[bundle]: http://projectfluent.org/fluent.js/fluent/class/src/bundle.js~FluentBundle.html
+[resource]: http://projectfluent.org/fluent.js/fluent/class/src/resource.js~FluentResource.html
 
 ## API
 
@@ -18,17 +19,13 @@ lets you take care of the message compilation during your build.
 import { compile } from 'fluent-compiler'
 ```
 
-### `compile(locales, source, options = {}) => FluentBundle`
+### `compile(locales, source, options = {}) => string`
 
 | Param   | Type                            | Description                                                                        |
 | ------- | ------------------------------- | ---------------------------------------------------------------------------------- |
 | locales | `string | string[] | undefined` | The resource's locale identifier                                                   |
 | source  | `string | Resource`             | Fluent source as a string, or an AST compiled with the [`fluent-syntax`][1] parser |
 | options | `Object`                        | Compiler options (optional)                                                        |
-
-The [`FluentBundle`][fluentbundle] returned by `compile()` provides the same API
-as that of the `fluent` package, with the exception of the Fluent-compiling
-`addMessages` method.
 
 #### Options
 
@@ -39,6 +36,20 @@ as that of the `fluent` package, with the exception of the Fluent-compiling
 | withJunk     | `boolean` | `false`                     | Include unparsed source as comments in the output      |
 
 [1]: https://www.npmjs.com/package/fluent-syntax
+
+The string returned by `compile()` is the string representation of an ES6
+module, which in turn exports [bundle] and [resource] interfaces for the source
+messages. Note that the `bundle.addMessages()` is not included, as it requires
+message compilation; use `bundle.addResource()` instead:
+
+```js
+import bundle from './default_messages'
+import { resource } from './extra_messages'
+
+bundle.addResource(resource, { allowOverrides: true })
+// bundle now includes all default_messages as well as extra_messages,
+// with the latter overriding the former
+```
 
 ## Usage
 
