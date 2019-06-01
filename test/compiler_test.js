@@ -132,7 +132,7 @@ suite('Compile resource', function() {
       foo = Foo { -bar }
     `
     const output = ftl`
-      ["foo", { value: $ => ["Foo ", R.get("-bar").value($)] }],
+      ["foo", { value: $ => ["Foo ", R.get("-bar").value()] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -508,7 +508,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [select(R.get("-bar").attr.baz($), "a", { a: "A" })] }],
+      ["foo", { value: $ => [select(R.get("-bar").attr.baz(), "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -618,7 +618,7 @@ suite('Compile resource', function() {
       foo = { -term() }
     `
     const output = ftl`
-      ["foo", { value: $ => [R.get("-term").value($)] }],
+      ["foo", { value: $ => [R.get("-term").value()] }],
     `
     assert.equal(pretty(input), output)
   })

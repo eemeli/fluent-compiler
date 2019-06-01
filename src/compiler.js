@@ -165,7 +165,7 @@ export class FluentJSCompiler {
         } else {
           out = `${out}.value`
         }
-        const args = this.callArguments(expr.arguments)
+        const args = this.termArguments(expr.arguments)
         return `${out}${args}`
       }
       case 'MessageReference': {
@@ -177,8 +177,10 @@ export class FluentJSCompiler {
         }
         return `${out}($)`
       }
-      case 'FunctionReference':
-        return `${expr.id.name}${this.callArguments(expr.arguments)}`
+      case 'FunctionReference': {
+        const args = this.functionArguments(expr.arguments)
+        return `${expr.id.name}${args}`
+      }
       case 'SelectExpression': {
         const selector = this.expression(expr.selector)
         const defaultVariant = expr.variants.find(variant => variant.default)
@@ -193,13 +195,13 @@ export class FluentJSCompiler {
     }
   }
 
-  variant(variant) {
-    const key = this.variantKey(variant.key)
-    const value = this.pattern(variant.value, true)
-    return `${key}:${value}`
+  termArguments(expr) {
+    if (!expr || expr.named.length === 0) return '()'
+    const named = expr.named.map(this.namedArgument, this)
+    return `({ ${named.join(', ')} })`
   }
 
-  callArguments(expr) {
+  functionArguments(expr) {
     let ctx = '$'
     if (expr && expr.named.length > 0) {
       const named = expr.named.map(this.namedArgument, this)
@@ -217,6 +219,12 @@ export class FluentJSCompiler {
     const key = property(null, arg.name.name)
     const value = this.expression(arg.value)
     return `${key}: ${value}`
+  }
+
+  variant(variant) {
+    const key = this.variantKey(variant.key)
+    const value = this.pattern(variant.value, true)
+    return `${key}:${value}`
   }
 
   variantKey(key) {
