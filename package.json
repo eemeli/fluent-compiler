@@ -2,9 +2,15 @@
   "name": "fluent-loader",
   "version": "0.0.1",
   "description": "Webpack loader for Fluent",
-  "main": "src/loader.js",
+  "main": "dist/loader.js",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
-    "prettier": "prettier --write *.js src/* test/*"
+    "build": "babel src/ -d dist/",
+    "prepublishOnly": "npm test && npm run build",
+    "prettier": "prettier --write *.js src/* test/*",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -31,7 +37,16 @@
     "singleQuote": true
   },
   "devDependencies": {
-    "prettier": "^1.17.1"
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "babel-jest": "^24.8.0",
+    "common-tags": "^2.0.0-alpha.1",
+    "jest": "^24.8.0",
+    "memory-fs": "^0.4.1",
+    "prettier": "^1.17.1",
+    "webpack": "^4.32.2"
   },
   "dependencies": {
     "fluent-compiler": "^0.1.0",
