@@ -12,9 +12,21 @@ test('Simple FTL', async () => {
   const js = await compiler('fixtures/simple.ftl', { useIsolating: false })
   const bundle = getBundle(js)
   expect(typeof bundle.format).toBe('function')
-  expect(bundle.format('hello-user', { userName: 'USER' })).toBe('Hello, USER!')
-  expect(bundle.format('hello-user', {})).toBe('Hello, undefined!')
-  expect(bundle.format('hello-user')).toBe('Hello, undefined!')
+
+  let errors = []
+  let res = bundle.format('hello-user', { userName: 'USER' }, errors)
+  expect(errors).toHaveLength(0)
+  expect(res).toBe('Hello, USER!')
+
+  errors = []
+  res = bundle.format('hello-user', {}, errors)
+  expect(errors).toHaveLength(0)
+  expect(res).toBe('Hello, undefined!')
+
+  errors = []
+  res = bundle.format('hello-user', null, errors)
+  expect(errors).toHaveLength(0)
+  expect(res).toBe('Hello, undefined!')
 })
 
 test('Complex FTL', async () => {
@@ -26,8 +38,14 @@ test('Complex FTL', async () => {
     userGender: 'female',
     userName: 'USER'
   }
-  expect(bundle.format('hello-user', testData)).toBe('Hello, USER!')
-  expect(bundle.format('shared-photos', testData)).toBe(
-    'USER added a new photo to her stream.'
-  )
+
+  let errors = []
+  let res = bundle.format('hello-user', testData, errors)
+  expect(errors).toHaveLength(0)
+  expect(res).toBe('Hello, USER!')
+
+  errors = []
+  res = bundle.format('shared-photos', testData, errors)
+  expect(errors).toHaveLength(0)
+  expect(res).toBe('USER added a new photo to her stream.')
 })
