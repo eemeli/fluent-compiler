@@ -34,20 +34,36 @@ test('Complex FTL with options', async () => {
   `)
 })
 
-test('Custom locale', async () => {
-  const js = await compiler('fixtures/simple.ftl', {
-    locale: 'en-ZA',
-    useIsolating: false
+describe('Options', () => {
+  test('defaultLocale: "en-ZA", useIsolating: false', async () => {
+    const js = await compiler('fixtures/simple.ftl', {
+      defaultLocale: 'en-ZA',
+      useIsolating: false
+    })
+    expect(js).toBe(source`
+      import Runtime from "fluent-compiler/runtime"
+      const { bundle } = Runtime(["en-ZA"])
+      const R = new Map([
+
+      ["hello-user", { value: $ => ["Hello, ", $.userName, "!"] }],
+
+      ])
+      export const resource = R
+      export default bundle(R)
+    `)
   })
-  expect(js).toBe(source`
-    import Runtime from "fluent-compiler/runtime"
-    const { bundle } = Runtime(["en-ZA"])
-    const R = new Map([
 
-    ["hello-user", { value: $ => ["Hello, ", $.userName, "!"] }],
+  test('locales: no match', async () => {
+    const js = await compiler('fixtures/simple.ftl', {
+      locales: ['foo', 'bar']
+    })
+    expect(js).toMatch(`const { bundle, isol } = Runtime(["foo","bar"])`)
+  })
 
-    ])
-    export const resource = R
-    export default bundle(R)
-  `)
+  test('locales: filename match', async () => {
+    const js = await compiler('fixtures/simple.ftl', {
+      locales: ['foo', 'simple']
+    })
+    expect(js).toMatch(`const { bundle, isol } = Runtime(["simple"])`)
+  })
 })
