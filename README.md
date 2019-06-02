@@ -9,9 +9,13 @@ latter will need to compile your messages on the client, and is about 10kB when
 compressed. The runtime component of `fluent-compiler` is about 1.2kB, and it
 lets you take care of the message compilation during your build.
 
+**NOTE:** The current runtime implements the `format()/compound()` API of
+Fluent.js [PR #360], which is likely still to get revised.
+
 [fluent]: https://projectfluent.org/
 [bundle]: http://projectfluent.org/fluent.js/fluent/class/src/bundle.js~FluentBundle.html
 [resource]: http://projectfluent.org/fluent.js/fluent/class/src/resource.js~FluentResource.html
+[pr #360]: https://github.com/projectfluent/fluent.js/pull/360
 
 ## API
 
@@ -25,15 +29,16 @@ import { compile } from 'fluent-compiler'
 | ------- | ------------------------------- | ---------------------------------------------------------------------------------- |
 | locales | `string | string[] | undefined` | The resource's locale identifier                                                   |
 | source  | `string | Resource`             | Fluent source as a string, or an AST compiled with the [`fluent-syntax`][1] parser |
-| options | `Object`                        | Compiler options (optional)                                                        |
+| options | `CompilerOptions`               | Compiler options object (optional)                                                 |
 
-#### Options
+#### `CompilerOptions`
 
-| Option       | Type      | Default                     | Description                                            |
-| ------------ | --------- | --------------------------- | ------------------------------------------------------ |
-| runtimePath  | `string`  | `'fluent-compiler/runtime'` | Path for the runtime dependency                        |
-| useIsolating | `boolean` | `true`                      | Wrap placeables with Unicode FSI & PDI isolation marks |
-| withJunk     | `boolean` | `false`                     | Include unparsed source as comments in the output      |
+| Option         | Type       | Default                     | Description                                              |
+| -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
+| runtimeGlobals | `string[]` | `['DATETIME', 'NUMBER']`    | Identifiers of global functions available in the runtime |
+| runtimePath    | `string`   | `'fluent-compiler/runtime'` | Path for the runtime dependency                          |
+| useIsolating   | `boolean`  | `true`                      | Wrap placeables with Unicode FSI & PDI isolation marks   |
+| withJunk       | `boolean`  | `false`                     | Include unparsed source as comments in the output        |
 
 [1]: https://www.npmjs.com/package/fluent-syntax
 
