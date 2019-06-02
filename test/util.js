@@ -24,7 +24,7 @@ export function ftl(strings) {
 }
 
 export function compileAndRequire(locale, ftlSrc, asResource) {
-  const runtimePath = path.resolve(__dirname, '../runtime')
+  const runtimePath = path.resolve(__dirname, 'runtime')
   const jsSrc = compile(locale, ftlSrc, { runtimePath })
   return new Promise((resolve, reject) => {
     tmp.file({ postfix: '.js' }, (err, path, fd) => {
