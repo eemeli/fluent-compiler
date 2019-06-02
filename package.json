@@ -36,9 +36,11 @@
     "safe-identifier": "^0.1.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
     "@babel/plugin-transform-modules-commonjs": "^7.4.3",
+    "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.0",
     "intl-pluralrules": "^1.0.1",
     "mocha": "^6.1.4",
