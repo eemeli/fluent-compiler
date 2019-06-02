@@ -1,0 +1,1 @@
+hello-user = Hello, {$userName}!
