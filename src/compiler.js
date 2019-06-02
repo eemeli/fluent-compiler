@@ -23,12 +23,8 @@ export class FluentJSCompiler {
     for (const fn of this.runtimeGlobals) this._rtImports[fn] = false
 
     const body = []
-    let hasEntries = false
     for (const entry of resource.body) {
-      if (entry.type !== 'Junk' || this.withJunk) {
-        body.push(this.entry(entry, hasEntries))
-        if (!hasEntries) hasEntries = true
-      }
+      if (entry.type !== 'Junk' || this.withJunk) body.push(this.entry(entry))
     }
 
     const rt = Object.keys(this._rtImports).filter(key => this._rtImports[key])
@@ -45,10 +41,10 @@ export class FluentJSCompiler {
       'export default bundle(R)'
     ].join('\n')
 
-    return `${head}\n\n${body.join('\n')}\n\n${foot}\n`
+    return `${head}\n\n${body.join('\n').trim()}\n\n${foot}\n`
   }
 
-  entry(entry, hasEntries = false) {
+  entry(entry) {
     let comment
     switch (entry.type) {
       case 'Message':
@@ -69,7 +65,7 @@ export class FluentJSCompiler {
       default:
         throw new Error(`Unknown entry type: ${entry.type}`)
     }
-    return hasEntries ? `\n${comment}\n` : `${comment}\n`
+    return `\n${comment}\n`
   }
 
   comment(comment, prefix = '//') {
