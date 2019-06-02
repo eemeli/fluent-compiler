@@ -1,7 +1,7 @@
 import { FluentParser } from 'fluent-syntax'
-import { FluentJSCompiler } from './compiler'
+import { FluentCompiler } from './compiler'
 
-export { compile, FluentJSCompiler }
+export { compile, FluentCompiler }
 
 /**
  * Compile a Fluent resource into the source of an ES6 module
@@ -12,7 +12,7 @@ export { compile, FluentJSCompiler }
  *
  * @param {string | string[] | undefined} locales The resource's locale identifier
  * @param {string | Resource} source Fluent source as a string, or an AST compiled from it
- * @param {Object} [opts={}] Options passed to both FluentParser and FluentJSCompiler
+ * @param {Object} [opts={}] Options passed to both FluentParser and FluentCompiler
  * @param {string[]} [opts.runtimeGlobals=['DATETIME', 'NUMBER']] Identifiers of global functions available in the runtime
  * @param {boolean} [opts.runtimePath='fluent-compiler/runtime'] Path for the runtime dependency
  * @param {boolean} [opts.useIsolating=true] Wrap placeables with Unicode FSI & PDI isolation marks
@@ -24,6 +24,6 @@ function compile(locales, source, opts) {
     const parser = new FluentParser()
     source = parser.parse(source)
   }
-  const compiler = new FluentJSCompiler(opts)
+  const compiler = new FluentCompiler(opts)
   return compiler.compile(locales, source)
 }

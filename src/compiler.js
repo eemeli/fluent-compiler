@@ -1,6 +1,6 @@
 import { property } from 'safe-identifier'
 
-export class FluentJSCompiler {
+export class FluentCompiler {
   constructor({
     runtimeGlobals = ['DATETIME', 'NUMBER'],
     runtimePath = 'fluent-compiler/runtime',

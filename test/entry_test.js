@@ -1,11 +1,10 @@
 import assert from 'assert'
-import { ftl } from './util'
 
-import { FluentJSCompiler } from '../src'
+import { FluentCompiler } from '../src'
 
 suite('Compile entry', function() {
   setup(function() {
-    this.compiler = new FluentJSCompiler()
+    this.compiler = new FluentCompiler()
   })
 
   test('simple message', function() {

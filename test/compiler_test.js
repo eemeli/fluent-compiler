@@ -2,7 +2,7 @@ import assert from 'assert'
 import { FluentParser } from 'fluent-syntax'
 import { ftl } from './util'
 
-import { FluentJSCompiler } from '../src/compiler'
+import { FluentCompiler } from '../src/compiler'
 
 function trimModuleHeaders(source) {
   const header = ftl`
@@ -27,7 +27,7 @@ suite('Compile resource', function() {
 
   setup(function() {
     const parser = new FluentParser()
-    const compiler = new FluentJSCompiler({
+    const compiler = new FluentCompiler({
       runtimeGlobals: ['FOO'],
       useIsolating: false,
       withJunk: false
@@ -40,7 +40,7 @@ suite('Compile resource', function() {
   })
 
   test('invalid resource', function() {
-    const compiler = new FluentJSCompiler()
+    const compiler = new FluentCompiler()
     assert.throws(
       () => compiler.compile(undefined, null),
       /Cannot read property 'type'/
@@ -671,7 +671,7 @@ suite('compiler.expression', function() {
   setup(function() {
     const parser = new FluentParser()
 
-    compiler = new FluentJSCompiler({ runtimeGlobals: ['BUILTIN'] })
+    compiler = new FluentCompiler({ runtimeGlobals: ['BUILTIN'] })
     pretty = function pretty(text) {
       const {
         value: {
@@ -748,7 +748,7 @@ suite('Compile padding around comments', function() {
 
   setup(function() {
     const parser = new FluentParser()
-    const compiler = new FluentJSCompiler({
+    const compiler = new FluentCompiler({
       withJunk: false
     })
 
@@ -836,7 +836,7 @@ suite('compiler.variantKey', function() {
   setup(function() {
     let parser = new FluentParser()
 
-    compiler = new FluentJSCompiler()
+    compiler = new FluentCompiler()
     prettyVariantKey = function(text, index) {
       let pattern = parser.parseEntry(text).value
       let variants = pattern.elements[0].expression.variants
