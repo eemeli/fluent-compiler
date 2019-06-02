@@ -11,6 +11,7 @@ export class FluentJSCompiler {
     this.runtimePath = runtimePath
     this.useIsolating = useIsolating
     this.withJunk = withJunk
+    this._rtImports = {}
   }
 
   compile(locales, resource) {
@@ -18,27 +19,33 @@ export class FluentJSCompiler {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
 
-    const parts = []
+    this._rtImports = { bundle: true, isol: false, select: false }
+    for (const fn of this.runtimeGlobals) this._rtImports[fn] = false
 
-    const lc = JSON.stringify(locales || undefined)
-    parts.push(`import Runtime from "${this.runtimePath}"`)
-    const rt = ['bundle', 'select', 'DATETIME', 'NUMBER']
-    if (this.useIsolating) rt.splice(1, 0, 'isol')
-    parts.push(`const { ${rt.join(', ')} } = Runtime(${lc})`)
-
-    parts.push('const R = new Map([\n')
+    const body = []
     let hasEntries = false
     for (const entry of resource.body) {
       if (entry.type !== 'Junk' || this.withJunk) {
-        parts.push(this.entry(entry, hasEntries))
+        body.push(this.entry(entry, hasEntries))
         if (!hasEntries) hasEntries = true
       }
     }
-    parts.push(`\n])`)
 
-    parts.push('export const resource = R')
-    parts.push(`export default bundle(R)\n`)
-    return parts.join('\n')
+    const rt = Object.keys(this._rtImports).filter(key => this._rtImports[key])
+    const lc = JSON.stringify(locales || undefined)
+    const head = [
+      `import Runtime from "${this.runtimePath}"`,
+      `const { ${rt.join(', ')} } = Runtime(${lc})`,
+      'const R = new Map(['
+    ].join('\n')
+
+    const foot = [
+      '])',
+      'export const resource = R',
+      'export default bundle(R)'
+    ].join('\n')
+
+    return `${head}\n\n${body.join('\n')}\n\n${foot}\n`
   }
 
   entry(entry, hasEntries = false) {
@@ -143,6 +150,7 @@ export class FluentJSCompiler {
       case 'Placeable': {
         const expr = this.expression(element.expression)
         if (useIsolating) {
+          this._rtImports.isol = true
           return `isol(${expr})`
         }
         return expr
@@ -183,6 +191,7 @@ export class FluentJSCompiler {
         const fnName = expr.id.name
         if (!this.runtimeGlobals.includes(fnName))
           throw new Error(`Unsupported global ${fnName}`)
+        this._rtImports[fnName] = true
         const args = this.functionArguments(expr.arguments)
         return `${fnName}${args}`
       }
@@ -191,6 +200,7 @@ export class FluentJSCompiler {
         const defaultVariant = expr.variants.find(variant => variant.default)
         const defaultKey = JSON.stringify(this.variantKey(defaultVariant.key))
         const variants = expr.variants.map(this.variant, this).join(', ')
+        this._rtImports.select = true
         return `select(${selector}, ${defaultKey}, { ${variants} })`
       }
       case 'Placeable':
