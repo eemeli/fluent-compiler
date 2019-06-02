@@ -44,6 +44,7 @@
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
     "common-tags": "^2.0.0-alpha.1",
+    "intl-pluralrules": "^1.0.2",
     "jest": "^24.8.0",
     "memory-fs": "^0.4.1",
     "prettier": "^1.17.1",

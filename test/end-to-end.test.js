@@ -1,3 +1,4 @@
+import 'intl-pluralrules' // For Node 8
 import compiler from './es5-compiler'
 
 function getBundle(src) {
