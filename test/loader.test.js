@@ -1,5 +1,5 @@
 import { source } from 'common-tags'
-import compiler from './compiler'
+import compiler from './es6-compiler'
 
 test('Simple FTL', async () => {
   const js = await compiler('fixtures/simple.ftl')
