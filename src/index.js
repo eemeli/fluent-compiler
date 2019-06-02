@@ -13,6 +13,7 @@ export { compile, FluentJSCompiler }
  * @param {string | string[] | undefined} locales The resource's locale identifier
  * @param {string | Resource} source Fluent source as a string, or an AST compiled from it
  * @param {Object} [opts={}] Options passed to both FluentParser and FluentJSCompiler
+ * @param {string[]} [opts.runtimeGlobals=['DATETIME', 'NUMBER']] Identifiers of global functions available in the runtime
  * @param {boolean} [opts.runtimePath='fluent-compiler/runtime'] Path for the runtime dependency
  * @param {boolean} [opts.useIsolating=true] Wrap placeables with Unicode FSI & PDI isolation marks
  * @param {boolean} [opts.withJunk=false] Include unparsed source as comments in the output

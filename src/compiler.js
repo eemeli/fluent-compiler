@@ -2,10 +2,12 @@ import { property } from 'safe-identifier'
 
 export class FluentJSCompiler {
   constructor({
+    runtimeGlobals = ['DATETIME', 'NUMBER'],
     runtimePath = 'fluent-compiler/runtime',
     useIsolating = true,
     withJunk = false
   } = {}) {
+    this.runtimeGlobals = runtimeGlobals
     this.runtimePath = runtimePath
     this.useIsolating = useIsolating
     this.withJunk = withJunk
@@ -178,8 +180,11 @@ export class FluentJSCompiler {
         return `${out}($)`
       }
       case 'FunctionReference': {
+        const fnName = expr.id.name
+        if (!this.runtimeGlobals.includes(fnName))
+          throw new Error(`Unsupported global ${fnName}`)
         const args = this.functionArguments(expr.arguments)
-        return `${expr.id.name}${args}`
+        return `${fnName}${args}`
       }
       case 'SelectExpression': {
         const selector = this.expression(expr.selector)

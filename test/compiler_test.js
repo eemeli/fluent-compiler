@@ -28,6 +28,7 @@ suite('Compile resource', function() {
   setup(function() {
     const parser = new FluentParser()
     const compiler = new FluentJSCompiler({
+      runtimeGlobals: ['FOO'],
       useIsolating: false,
       withJunk: false
     })
@@ -670,7 +671,7 @@ suite('compiler.expression', function() {
   setup(function() {
     const parser = new FluentParser()
 
-    compiler = new FluentJSCompiler()
+    compiler = new FluentJSCompiler({ runtimeGlobals: ['BUILTIN'] })
     pretty = function pretty(text) {
       const {
         value: {
