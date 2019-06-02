@@ -35,9 +35,9 @@ test('Complex FTL with options', async () => {
 })
 
 describe('Options', () => {
-  test('defaultLocale: "en-ZA", useIsolating: false', async () => {
+  test('locales: ["en-ZA"], useIsolating: false', async () => {
     const js = await compiler('fixtures/simple.ftl', {
-      defaultLocale: 'en-ZA',
+      locales: ['en-ZA'],
       useIsolating: false
     })
     expect(js).toBe(source`
@@ -57,7 +57,7 @@ describe('Options', () => {
     const js = await compiler('fixtures/simple.ftl', {
       locales: ['foo', 'bar']
     })
-    expect(js).toMatch(`const { bundle, isol } = Runtime(["foo","bar"])`)
+    expect(js).toMatch(`const { bundle, isol } = Runtime(["foo"])`)
   })
 
   test('locales: filename match', async () => {
@@ -65,5 +65,14 @@ describe('Options', () => {
       locales: ['foo', 'simple']
     })
     expect(js).toMatch(`const { bundle, isol } = Runtime(["simple"])`)
+  })
+
+  test('locales: empty', async () => {
+    try {
+      await compiler('fixtures/simple.ftl', { locales: [] })
+      throw new Error('Expected compiler call to fail!')
+    } catch (err) {
+      expect(err.message).toMatch('If set, `locales` must be a non-empty array')
+    }
   })
 })
