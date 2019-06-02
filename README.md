@@ -66,7 +66,7 @@ module.exports = {
 
 All `fluent-loader` options are optional, and the values shown above are the defaults. All other [fluent-compiler] options are also supported.
 
-If `locales` contains more than one entry, the locale of an FTL file will be detected by looking for a matching substring in the file path. For example, if `locales` is `['en', 'fi']`, files such as `messages_fi.ftl` and `i18n/fi/messages.ftl` will be recognised as having the `fi` locale. These substrings must be separated from the rest of the path by `/`, `.` or `_` characters. On no match, the first entry of `locales` will be used as the default value.
+If `locales` contains more than one entry, the locale of an FTL file will be detected by looking for a matching substring in the file path. For example, if `locales` is `['en-US', 'fi-FI']`, files such as `messages_fi.ftl` and `i18n/fi-FI/messages.ftl` will be recognised as having a Finnish locale. These substrings must be separated from the rest of the path by `/`, `.` or `_` characters. On no match, the first entry of `locales` will be used as the default value.
 
 ## Usage
 
