@@ -45,34 +45,30 @@ export class FluentCompiler {
   }
 
   entry(entry) {
-    let comment
     switch (entry.type) {
       case 'Message':
         return this.message(entry)
       case 'Term':
         return this.term(entry)
       case 'Comment':
-        comment = this.comment(entry, '//')
-        break
+        return this.comment(entry, '//')
       case 'GroupComment':
-        comment = this.comment(entry, '// ##')
-        break
+        return this.comment(entry, '// ##')
       case 'ResourceComment':
-        comment = this.comment(entry, '// ###')
-        break
+        return this.comment(entry, '// ###')
       case 'Junk':
         return this.junk(entry)
       default:
         throw new Error(`Unknown entry type: ${entry.type}`)
     }
-    return `\n${comment}\n`
   }
 
   comment(comment, prefix = '//') {
-    return comment.content
+    const cc = comment.content
       .split('\n')
       .map(line => (line.length ? `${prefix} ${line}` : prefix))
       .join('\n')
+    return `\n${cc}\n`
   }
 
   junk(junk) {
@@ -80,50 +76,48 @@ export class FluentCompiler {
   }
 
   message(message) {
-    const parts = []
-    if (message.comment) parts.push(this.comment(message.comment))
-
+    const head = message.comment ? this.comment(message.comment) : ''
     const name = JSON.stringify(message.id.name)
     const value = message.value ? this.pattern(message.value, false) : ' null'
-    parts.push(this.messageBody(name, value, message.attributes))
-    return parts.join('\n')
+    const body = this.messageBody(name, value, message.attributes)
+    return head + body
   }
 
   term(term) {
-    const parts = []
-    if (term.comment) parts.push(this.comment(term.comment))
-
+    const head = term.comment ? this.comment(term.comment) : ''
     const name = JSON.stringify(`-${term.id.name}`)
     const value = this.pattern(term.value, false)
-    parts.push(this.messageBody(name, value, term.attributes))
-    return parts.join('\n')
+    const body = this.messageBody(name, value, term.attributes)
+    return head + body
   }
 
   messageBody(name, value, attributes) {
-    const attrParts = []
+    const attr = []
     for (const attribute of attributes) {
       const name = JSON.stringify(attribute.id.name)
       const value = this.pattern(attribute.value, false)
-      attrParts.push(`${name}: $ =>${value}`)
+      attr.push(`${name}: $ =>${value}`)
     }
-    const parts = []
-    switch (attrParts.length) {
+    switch (attr.length) {
       case 0:
-        parts.push(`[${name}, { value: $ =>${value} }],`)
-        break
+        return `[${name}, { value: $ =>${value} }],`
       case 1:
-        parts.push(`[${name}, {`)
-        parts.push(`value: $ =>${value},`)
-        parts.push(`attr: { ${attrParts[0]} }\n}],`)
-        break
+        return [
+          `[${name}, {`,
+          `  value: $ =>${value},`,
+          `  attr: { ${attr[0]} }`,
+          '}],'
+        ].join('\n')
       default:
-        parts.push(`[${name}, {`)
-        parts.push(`value: $ =>${value},`)
-        parts.push('attr: {')
-        parts.push('  ' + attrParts.join(',\n    '))
-        parts.push('}\n}],')
+        return [
+          `[${name}, {`,
+          `  value: $ =>${value},`,
+          '  attr: {',
+          `    ${attr.join(',\n    ')}`,
+          '  }',
+          '}],'
+        ].join('\n')
     }
-    return parts.join('\n  ')
   }
 
   pattern(pattern, inVariant) {
