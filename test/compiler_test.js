@@ -13,9 +13,8 @@ function trimModuleHeaders(source) {
   `
   const footer = ftl`
 
-    ]\\)
-    export const resource = R
-    export default bundle\\(R\\)
+    ]\\);
+    export default (R|bundle\\(R\\));
   `
   return source
     .replace(new RegExp('^' + header), '')

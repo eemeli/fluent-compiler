@@ -119,7 +119,6 @@ suite('Bundle', function() {
     test('returns id for terms and missing messages', function() {
       let errors = []
       assert.equal(bundle.format('-term', {}, errors), '-term')
-      console.log(errors)
       assert.equal(errors[0].message, 'Unknown message: -term')
 
       errors = []

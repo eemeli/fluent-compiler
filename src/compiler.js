@@ -2,11 +2,13 @@ import { property } from 'safe-identifier'
 
 export class FluentCompiler {
   constructor({
+    runtime = 'bundle',
     runtimeGlobals = ['DATETIME', 'NUMBER'],
     runtimePath = 'fluent-compiler/runtime',
     useIsolating = true,
     withJunk = false
   } = {}) {
+    this.runtime = runtime
     this.runtimeGlobals = runtimeGlobals
     this.runtimePath = runtimePath
     this.useIsolating = useIsolating
@@ -19,7 +21,11 @@ export class FluentCompiler {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
 
-    this._rtImports = { bundle: true, isol: false, select: false }
+    this._rtImports = {
+      bundle: this.runtime !== 'resource',
+      isol: false,
+      select: false
+    }
     for (const fn of this.runtimeGlobals) this._rtImports[fn] = false
 
     const body = []
@@ -30,18 +36,23 @@ export class FluentCompiler {
     const rt = Object.keys(this._rtImports).filter(key => this._rtImports[key])
     const lc = JSON.stringify(locales || undefined)
     const head = [
-      `import Runtime from "${this.runtimePath}"`,
-      `const { ${rt.join(', ')} } = Runtime(${lc})`,
+      `import Runtime from "${this.runtimePath}";`,
+      `const { ${rt.join(', ')} } = Runtime(${lc});`,
       'const R = new Map(['
     ].join('\n')
 
-    const foot = [
-      '])',
-      'export const resource = R',
-      'export default bundle(R)'
-    ].join('\n')
-
-    return `${head}\n\n${body.join('\n').trim()}\n\n${foot}\n`
+    const foot = [']);']
+    switch (this.runtime) {
+      case 'bundle':
+        foot.push('export default bundle(R);')
+        break
+      case 'resource':
+        foot.push('export default R;')
+        break
+      default:
+        throw new Error(`Unknown runtime ${JSON.stringify(this.runtime)}`)
+    }
+    return `${head}\n\n${body.join('\n').trim()}\n\n${foot.join('\n')}\n`
   }
 
   entry(entry) {

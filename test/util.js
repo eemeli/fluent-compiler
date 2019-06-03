@@ -25,17 +25,17 @@ export function ftl(strings) {
 
 export function compileAndRequire(locale, ftlSrc, asResource) {
   const runtimePath = path.resolve(__dirname, 'runtime')
-  const jsSrc = compile(locale, ftlSrc, { runtimePath })
+  const jsSrc = compile(locale, ftlSrc, {
+    runtime: asResource ? 'resource' : 'bundle',
+    runtimePath
+  })
   return new Promise((resolve, reject) => {
     tmp.file({ postfix: '.js' }, (err, path, fd) => {
       if (err) reject(err)
       else {
         fs.write(fd, jsSrc, 0, 'utf8', err => {
           if (err) reject(err)
-          else {
-            const { default: bundle, resource } = require(path)
-            resolve(asResource ? resource : bundle)
-          }
+          else resolve(require(path).default)
         })
       }
     })

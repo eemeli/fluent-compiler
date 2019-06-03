@@ -33,19 +33,17 @@ import { compile } from 'fluent-compiler'
 
 #### `CompilerOptions`
 
-| Option         | Type       | Default                     | Description                                              |
-| -------------- | ---------- | --------------------------- | -------------------------------------------------------- |
-| runtimeGlobals | `string[]` | `['DATETIME', 'NUMBER']`    | Identifiers of global functions available in the runtime |
-| runtimePath    | `string`   | `'fluent-compiler/runtime'` | Path for the runtime dependency                          |
-| useIsolating   | `boolean`  | `true`                      | Wrap placeables with Unicode FSI & PDI isolation marks   |
-| withJunk       | `boolean`  | `false`                     | Include unparsed source as comments in the output        |
+| Option         | Type       | Default                     | Description                                                   |
+| -------------- | ---------- | --------------------------- | ------------------------------------------------------------- |
+| runtime        | `string`   | `'bundle'`                  | The type of runtime to use; either `'bundle'` or `'resource'` |
+| runtimeGlobals | `string[]` | `['DATETIME', 'NUMBER']`    | Identifiers of global functions available in the runtime      |
+| runtimePath    | `string`   | `'fluent-compiler/runtime'` | Path for the runtime dependency                               |
+| useIsolating   | `boolean`  | `true`                      | Wrap placeables with Unicode FSI & PDI isolation marks        |
+| withJunk       | `boolean`  | `false`                     | Include unparsed source as comments in the output             |
 
 [1]: https://www.npmjs.com/package/fluent-syntax
 
-The string returned by `compile()` is the string representation of an ES6
-module, which in turn exports [bundle] and [resource] interfaces for the source
-messages. Note that the `bundle.addMessages()` is not included, as it requires
-message compilation; use `bundle.addResource()` instead:
+The string returned by `compile()` is the string representation of an ES6 module, which in turn exports either the [bundle] or [resource] interfaces for the source messages. Note that the `bundle.addMessages()` is not included, as it requires message compilation; use `bundle.addResource()` instead:
 
 ```js
 import bundle from './default_messages'
