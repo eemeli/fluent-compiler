@@ -1,90 +1,11 @@
+import FluentBundle from './bundle'
+
 export default function Runtime(lc) {
-  let dtf, nf, pr
-
-  function msgString(parts) {
-    return parts.map(msgPart).join('')
-  }
-
-  function msgPart(part) {
-    switch (typeof part) {
-      case 'string':
-        return part
-      case 'number':
-        if (!nf) nf = new Intl.NumberFormat(lc)
-        return nf.format(part)
-      case 'object':
-        if (part instanceof Date) {
-          if (!dtf) dtf = new Intl.DateTimeFormat(lc)
-          return dtf.format(part)
-        } else if (Array.isArray(part)) {
-          return msgString(part)
-        } else if (part && part.$) {
-          return part.fmt
-        }
-    }
-    return String(part)
-  }
-
-  class FluentBundle {
-    constructor(resource) {
-      this._res = resource
-      this.locales = Array.isArray(lc) ? lc : [lc]
-    }
-
-    addResource(resource, opt) {
-      const ao = (opt && opt.allowOverrides) || false
-      const err = []
-      for (const [id, msg] of resource) {
-        if (!ao && this._res.has(id)) {
-          err.push(`Attempt to override an existing message: "${id}"`)
-        } else {
-          this._res.set(id, msg)
-        }
-      }
-      return err
-    }
-
-    compound(id, args, errors) {
-      const msg = id[0] !== '-' && this._res.get(id)
-      try {
-        if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
-        if (!args) args = {}
-        const value = msgString(msg.value(args))
-        const attributes = new Map()
-        if (msg.attr) {
-          for (const [attr, fn] of Object.entries(msg.attr)) {
-            attributes.set(attr, msgString(fn(args)))
-          }
-        }
-        return { value, attributes }
-      } catch (err) {
-        if (errors) errors.push(err)
-        return { value: id, attributes: new Map() }
-      }
-    }
-
-    format(id, args, errors) {
-      const [msgId, attrId] = id.split('.', 2)
-      const msg = id[0] !== '-' && this._res.get(msgId)
-      try {
-        if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
-        const fn = attrId ? msg.attr && msg.attr[attrId] : msg.value
-        if (!fn) throw new ReferenceError(`No attribute called: ${attrId}`)
-        return msgString(fn(args || {}))
-      } catch (err) {
-        if (errors) errors.push(err)
-        return id
-      }
-    }
-
-    hasMessage(message) {
-      return message[0] !== '-' && this._res.has(message)
-    }
-  }
+  let pr
 
   return {
     bundle(messages) {
-      return new FluentBundle(messages)
+      return new FluentBundle(lc, messages)
     },
 
     isol(expr) {
