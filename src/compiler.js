@@ -48,6 +48,10 @@ export class FluentCompiler {
         break
       case 'resource':
         foot.push('export default R;')
+        if (locales) {
+          const lca = Array.isArray(locales) ? lc : `[${lc}]`
+          foot.push(`export const locales = ${lca};`)
+        }
         break
       default:
         throw new Error(`Unknown runtime ${JSON.stringify(this.runtime)}`)
