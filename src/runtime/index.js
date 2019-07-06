@@ -1,13 +1,7 @@
-import FluentBundle from './bundle'
-
 export default function Runtime(lc) {
   let pr
 
   return {
-    bundle(messages) {
-      return new FluentBundle(lc, messages)
-    },
-
     isol(expr) {
       // Unicode bidi isolation characters.
       const FSI = '\u2068'

@@ -7,6 +7,7 @@ import { FluentCompiler } from '../src/compiler'
 function trimModuleHeaders(source) {
   const header = ftl`
     import Runtime from .*
+    import Bundle from .*
     const { .* } = Runtime.*
     const R = new Map\\(\\[
 
@@ -14,7 +15,7 @@ function trimModuleHeaders(source) {
   const footer = ftl`
 
     ]\\);
-    export default (R|bundle\\(R\\));
+    export default .*
   `
   return source
     .replace(new RegExp('^' + header), '')

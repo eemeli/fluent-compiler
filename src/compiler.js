@@ -21,11 +21,7 @@ export class FluentCompiler {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
 
-    this._rtImports = {
-      bundle: this.runtime !== 'resource',
-      isol: false,
-      select: false
-    }
+    this._rtImports = { isol: false, select: false }
     for (const fn of this.runtimeGlobals) this._rtImports[fn] = false
 
     const body = []
@@ -39,12 +35,13 @@ export class FluentCompiler {
       `import Runtime from "${this.runtimePath}";`,
       `const { ${rt.join(', ')} } = Runtime(${lc});`,
       'const R = new Map(['
-    ].join('\n')
+    ]
 
     const foot = [']);']
     switch (this.runtime) {
       case 'bundle':
-        foot.push('export default bundle(R);')
+        head.splice(1, 0, `import Bundle from "${this.runtimePath}/bundle";`)
+        foot.push(`export default new Bundle(${lc}, R);`)
         break
       case 'resource':
         foot.push('export default R;')
@@ -56,7 +53,9 @@ export class FluentCompiler {
       default:
         throw new Error(`Unknown runtime ${JSON.stringify(this.runtime)}`)
     }
-    return `${head}\n\n${body.join('\n').trim()}\n\n${foot.join('\n')}\n`
+    return `${head.join('\n')}\n\n${body.join('\n').trim()}\n\n${foot.join(
+      '\n'
+    )}\n`
   }
 
   entry(entry) {
