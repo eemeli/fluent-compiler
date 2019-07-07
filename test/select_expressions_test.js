@@ -18,7 +18,8 @@ suite('Select expressions', function() {
         }
       `
     )
-    const val = bundle.format('select', null, errs)
+    const msg = bundle.getMessage('select')
+    const val = bundle.formatPattern(msg.value, null, errs)
     assert.equal(val, 'B')
 
     // Skipping as the missing variable is not detected; instead treated as
@@ -38,7 +39,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 'a' }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 'a' }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -53,7 +55,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 'c' }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 'c' }, errs)
       assert.equal(val, 'B')
       assert.equal(errs.length, 0)
     })
@@ -70,7 +73,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 0 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 0 }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -85,7 +89,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 2 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
       assert.equal(val, 'B')
       assert.equal(errs.length, 0)
     })
@@ -102,7 +107,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 1 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 1 }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -117,7 +123,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 'one' }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 'one' }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -132,7 +139,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 2 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
       assert.equal(val, 'D')
       assert.equal(errs.length, 0)
     })
@@ -147,7 +155,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 'other' }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 'other' }, errs)
       assert.equal(val, 'D')
       assert.equal(errs.length, 0)
     })
@@ -162,7 +171,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 1 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 1 }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -177,7 +187,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 2 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })
@@ -193,7 +204,8 @@ suite('Select expressions', function() {
           }
         `
       )
-      const val = bundle.format('select', { selector: 2 }, errs)
+      const msg = bundle.getMessage('select')
+      const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
       assert.equal(val, 'A')
       assert.equal(errs.length, 0)
     })

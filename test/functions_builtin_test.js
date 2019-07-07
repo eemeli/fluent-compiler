@@ -5,9 +5,9 @@ import assert from 'assert'
 import { compileAndRequire, ftl } from './util'
 
 suite('Built-in functions', function() {
-  let bundle
-
   suite('NUMBER', function() {
+    let bundle, msgDec, msgPct, msgBad
+
     suiteSetup(async () => {
       bundle = await compileAndRequire(
         'en-US',
@@ -17,30 +17,35 @@ suite('Built-in functions', function() {
           num-bad-opt = { NUMBER($arg, style: "bad") }
         `
       )
+      msgDec = bundle.getMessage('num-decimal')
+      msgPct = bundle.getMessage('num-percent')
+      msgBad = bundle.getMessage('num-bad-opt')
     })
 
     test('missing argument', function() {
-      assert.equal(bundle.format('num-decimal'), 'NaN')
-      assert.equal(bundle.format('num-percent'), 'NaN')
-      assert.equal(bundle.format('num-bad-opt'), 'NaN')
+      assert.equal(bundle.formatPattern(msgDec.value), 'NaN')
+      assert.equal(bundle.formatPattern(msgPct.value), 'NaN')
+      assert.equal(bundle.formatPattern(msgBad.value), 'NaN')
     })
 
     test('number argument', function() {
       const args = { arg: 1 }
-      assert.equal(bundle.format('num-decimal', args), '1')
-      assert.equal(bundle.format('num-percent', args), '100%')
-      assert.equal(bundle.format('num-bad-opt', args), '1')
+      assert.equal(bundle.formatPattern(msgDec.value, args), '1')
+      assert.equal(bundle.formatPattern(msgPct.value, args), '100%')
+      assert.equal(bundle.formatPattern(msgBad.value, args), '1')
     })
 
     test('string argument', function() {
       const args = { arg: 'Foo' }
-      assert.equal(bundle.format('num-decimal', args), 'NaN')
-      assert.equal(bundle.format('num-percent', args), 'NaN')
-      assert.equal(bundle.format('num-bad-opt', args), 'NaN')
+      assert.equal(bundle.formatPattern(msgDec.value, args), 'NaN')
+      assert.equal(bundle.formatPattern(msgPct.value, args), 'NaN')
+      assert.equal(bundle.formatPattern(msgBad.value, args), 'NaN')
     })
   })
 
   suite('DATETIME', function() {
+    let bundle, msgDef, msgMon, msgBad
+
     suiteSetup(async () => {
       bundle = await compileAndRequire(
         'en-US',
@@ -50,12 +55,15 @@ suite('Built-in functions', function() {
           dt-bad-opt = { DATETIME($arg, month: "bad") }
         `
       )
+      msgDef = bundle.getMessage('dt-default')
+      msgMon = bundle.getMessage('dt-month')
+      msgBad = bundle.getMessage('dt-bad-opt')
     })
 
     test('missing argument', function() {
-      assert.equal(bundle.format('dt-default'), 'Invalid Date')
-      assert.equal(bundle.format('dt-month'), 'Invalid Date')
-      assert.equal(bundle.format('dt-bad-opt'), 'Invalid Date')
+      assert.equal(bundle.formatPattern(msgDef.value), 'Invalid Date')
+      assert.equal(bundle.formatPattern(msgMon.value), 'Invalid Date')
+      assert.equal(bundle.formatPattern(msgBad.value), 'Invalid Date')
     })
 
     test('Date argument', function() {
@@ -67,8 +75,8 @@ suite('Built-in functions', function() {
       }).format(date)
 
       const args = { arg: date }
-      assert.equal(bundle.format('dt-default', args), expectedDefault)
-      assert.equal(bundle.format('dt-month', args), expectedMonth)
+      assert.equal(bundle.formatPattern(msgDef.value, args), expectedDefault)
+      assert.equal(bundle.formatPattern(msgMon.value, args), expectedMonth)
 
       // The argument value will be coerced into a string by the join operation
       // in FluentBundle.format.  The result looks something like this; it

@@ -48,17 +48,13 @@ export default class FluentBundle {
     return err
   }
 
-  format(id, args, errors) {
-    const [msgId, attrId] = id.split('.', 2)
-    const msg = id[0] !== '-' && this._res.get(msgId)
+  formatPattern(pattern, args, errors) {
     try {
-      if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
-      const fn = attrId ? msg.attr && msg.attr[attrId] : msg.value
-      if (!fn) throw new ReferenceError(`No attribute called: ${attrId}`)
-      return msgString(this.locales, fn(args || {}))
+      const parts = pattern(args || {})
+      return msgString(this.locales, parts)
     } catch (err) {
       if (errors) errors.push(err)
-      return id
+      return null
     }
   }
 
