@@ -119,14 +119,14 @@ export class FluentCompiler {
         return [
           `[${name}, {`,
           `  value: $ =>${value},`,
-          `  attr: { ${attr[0]} }`,
+          `  attributes: { ${attr[0]} }`,
           '}],'
         ].join('\n')
       default:
         return [
           `[${name}, {`,
           `  value: $ =>${value},`,
-          '  attr: {',
+          '  attributes: {',
           `    ${attr.join(',\n    ')}`,
           '  }',
           '}],'
@@ -175,7 +175,7 @@ export class FluentCompiler {
       case 'TermReference': {
         let out = `R.get(${JSON.stringify(`-${expr.id.name}`)})`
         if (expr.attribute) {
-          out = property(`${out}.attr`, expr.attribute.name)
+          out = property(`${out}.attributes`, expr.attribute.name)
         } else {
           out = `${out}.value`
         }
@@ -185,7 +185,7 @@ export class FluentCompiler {
       case 'MessageReference': {
         let out = `R.get(${JSON.stringify(expr.id.name)})`
         if (expr.attribute) {
-          out = property(`${out}.attr`, expr.attribute.name)
+          out = property(`${out}.attributes`, expr.attribute.name)
         } else {
           out = `${out}.value`
         }

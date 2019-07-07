@@ -173,7 +173,7 @@ suite('Compile resource', function() {
       foo = Foo { bar.baz }
     `
     const output = ftl`
-      ["foo", { value: $ => ["Foo ", R.get("bar").attr.baz($)] }],
+      ["foo", { value: $ => ["Foo ", R.get("bar").attributes.baz($)] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -270,7 +270,7 @@ suite('Compile resource', function() {
     const output = ftl`
       ["foo", {
         value: $ => null,
-        attr: { "attr": $ => ["Foo Attr"] }
+        attributes: { "attr": $ => ["Foo Attr"] }
       }],
     `
     assert.equal(pretty(input), output)
@@ -286,7 +286,7 @@ suite('Compile resource', function() {
     const output = ftl`
       ["foo", {
         value: $ => null,
-        attr: { "attr": $ => ["Foo Attr\\nContinued"] }
+        attributes: { "attr": $ => ["Foo Attr\\nContinued"] }
       }],
     `
     assert.equal(pretty(input), output)
@@ -301,7 +301,7 @@ suite('Compile resource', function() {
     const output = ftl`
       ["foo", {
         value: $ => null,
-        attr: {
+        attributes: {
           "attr-a": $ => ["Foo Attr A"],
           "attr-b": $ => ["Foo Attr B"]
         }
@@ -319,7 +319,7 @@ suite('Compile resource', function() {
     const output = ftl`
       ["foo", {
         value: $ => ["Foo Value"],
-        attr: {
+        attributes: {
           "attr-a": $ => ["Foo Attr A"],
           "attr-b": $ => ["Foo Attr B"]
         }
@@ -339,7 +339,7 @@ suite('Compile resource', function() {
     const output = ftl`
       ["foo", {
         value: $ => ["Foo Value\\nContinued"],
-        attr: {
+        attributes: {
           "attr-a": $ => ["Foo Attr A"],
           "attr-b": $ => ["Foo Attr B"]
         }
@@ -509,7 +509,7 @@ suite('Compile resource', function() {
           }
     `
     const output = ftl`
-      ["foo", { value: $ => [select(R.get("-bar").attr.baz(), "a", { a: "A" })] }],
+      ["foo", { value: $ => [select(R.get("-bar").attributes.baz(), "a", { a: "A" })] }],
     `
     assert.equal(pretty(input), output)
   })
@@ -722,7 +722,7 @@ suite('compiler.expression', function() {
     const input = ftl`
       foo = { msg.attr }
     `
-    assert.equal(pretty(input), 'R.get("msg").attr.attr($)')
+    assert.equal(pretty(input), 'R.get("msg").attributes.attr($)')
   })
 
   test('call expression', function() {
