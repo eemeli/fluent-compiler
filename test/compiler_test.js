@@ -5,20 +5,15 @@ import { ftl } from './util'
 import { FluentCompiler } from '../src/compiler'
 
 function trimModuleHeaders(source) {
-  const header = ftl`
-    import Runtime from .*
-    import Bundle from .*
-    const { .* } = Runtime.*
-    const R = new Map\\(\\[
-
-  `
   const footer = ftl`
 
     ]\\);
     export default .*
   `
   return source
-    .replace(new RegExp('^' + header), '')
+    .replace(/^(import (Bundle|Runtime) from .*\n)+/, '')
+    .replace(/^const { .* } = Runtime.*\n/, '')
+    .replace(/^const R = new Map\(\[\n\n/, '')
     .replace(new RegExp(footer + '$'), '')
 }
 

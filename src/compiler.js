@@ -21,34 +21,34 @@ export class FluentCompiler {
       throw new Error(`Unknown resource type: ${resource.type}`)
     }
 
+    const lc = locales
+      ? JSON.stringify(Array.isArray(locales) ? locales : [locales])
+      : 'undefined'
     this._rtImports = { isol: false, select: false }
     for (const fn of this.runtimeGlobals) this._rtImports[fn] = false
 
-    const body = []
-    for (const entry of resource.body) {
-      if (entry.type !== 'Junk' || this.withJunk) body.push(this.entry(entry))
-    }
+    const head = ['const R = new Map([']
+    const body = resource.body
+      .filter(entry => entry.type !== 'Junk' || this.withJunk)
+      .map(entry => this.entry(entry)) // may modify this._rtImports
+    const foot = [']);']
 
     const rt = Object.keys(this._rtImports).filter(key => this._rtImports[key])
-    const lc = JSON.stringify(locales || undefined)
-    const head = [
-      `import Runtime from "${this.runtimePath}";`,
-      `const { ${rt.join(', ')} } = Runtime(${lc});`,
-      'const R = new Map(['
-    ]
+    if (rt.length > 0) {
+      head.unshift(
+        `import Runtime from "${this.runtimePath}";`,
+        `const { ${rt.join(', ')} } = Runtime(${lc});`
+      )
+    }
 
-    const foot = [']);']
     switch (this.runtime) {
       case 'bundle':
-        head.splice(1, 0, `import Bundle from "${this.runtimePath}/bundle";`)
+        head.unshift(`import Bundle from "${this.runtimePath}/bundle";`)
         foot.push(`export default new Bundle(${lc}, R);`)
         break
       case 'resource':
         foot.push('export default R;')
-        if (locales) {
-          const lca = Array.isArray(locales) ? lc : `[${lc}]`
-          foot.push(`export const locales = ${lca};`)
-        }
+        if (locales) foot.push(`export const locales = ${lc};`)
         break
       default:
         throw new Error(`Unknown runtime ${JSON.stringify(this.runtime)}`)
