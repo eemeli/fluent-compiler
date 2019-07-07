@@ -17,16 +17,6 @@ suite('Bundle runtime', function() {
       const bundle = new Bundle(undefined, new Map([['foo', { value, attr }]]))
       assert.equal(bundle.format('foo.bar'), 'Bar')
     })
-
-    test('Compound message', function() {
-      const value = () => ['Foo']
-      const attr = { bar: () => ['Bar'] }
-      const bundle = new Bundle(undefined, new Map([['foo', { value, attr }]]))
-      assert.deepEqual(bundle.compound('foo'), {
-        value: 'Foo',
-        attributes: new Map([['bar', 'Bar']])
-      })
-    })
   })
 
   suite('With set locale "fi"', function() {

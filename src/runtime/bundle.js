@@ -48,25 +48,6 @@ export default class FluentBundle {
     return err
   }
 
-  compound(id, args, errors) {
-    const msg = id[0] !== '-' && this._res.get(id)
-    try {
-      if (!msg) throw new ReferenceError(`Unknown message: ${id}`)
-      if (!args) args = {}
-      const value = msgString(this.locales, msg.value(args))
-      const attributes = new Map()
-      if (msg.attr) {
-        for (const [attr, fn] of Object.entries(msg.attr)) {
-          attributes.set(attr, msgString(this.locales, fn(args)))
-        }
-      }
-      return { value, attributes }
-    } catch (err) {
-      if (errors) errors.push(err)
-      return { value: id, attributes: new Map() }
-    }
-  }
-
   format(id, args, errors) {
     const [msgId, attrId] = id.split('.', 2)
     const msg = id[0] !== '-' && this._res.get(msgId)
@@ -81,7 +62,11 @@ export default class FluentBundle {
     }
   }
 
-  hasMessage(message) {
-    return message[0] !== '-' && this._res.has(message)
+  getMessage(id) {
+    return id[0] !== '-' && this._res.get(id)
+  }
+
+  hasMessage(id) {
+    return id[0] !== '-' && this._res.has(id)
   }
 }
