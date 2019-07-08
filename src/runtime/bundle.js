@@ -1,11 +1,4 @@
-const dtf = lc => dtf[lc] || (dtf[lc] = new Intl.DateTimeFormat(lc))
-const nf = lc => nf[lc] || (nf[lc] = new Intl.NumberFormat(lc))
-
-//const key = (lc, opt) => `${lc} ${Object.entries(opt || {})}`
-//function dtf(lc, opt) {
-//  const k = key(lc, opt)
-//  return dtf[k] || (dtf[k] = new Intl.DateTimeFormat(lc, opt))
-//}
+import { dtf, nf } from './intl-memo'
 
 function msgString(lc, parts) {
   return parts
@@ -14,10 +7,10 @@ function msgString(lc, parts) {
         case 'string':
           return part
         case 'number':
-          return nf(lc).format(part)
+          return nf(lc, part)
         case 'object':
           if (part instanceof Date) {
-            return dtf(lc).format(part)
+            return dtf(lc, part)
           } else if (Array.isArray(part)) {
             return msgString(lc, part)
           } else if (part && part.$) {
