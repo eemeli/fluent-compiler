@@ -1,6 +1,8 @@
 'use strict'
 import assert from 'assert'
-import { compileAndRequire, ftl } from './util'
+import ftl from '@fluent/dedent'
+
+import { compileAndRequire } from './util'
 
 // Unicode bidi isolation characters.
 const FSI = '\u2068'
@@ -17,7 +19,7 @@ suite('Isolating interpolations', function() {
         bar = { foo } Bar
         baz = { $arg } Baz
         qux = { bar } { baz }
-      `
+        `
     )
   })
 
@@ -77,7 +79,7 @@ suite('Skip isolation cases', function() {
       ftl`
         -brand-short-name = Amaya
         foo = { -brand-short-name }
-      `
+        `
     )
   })
 

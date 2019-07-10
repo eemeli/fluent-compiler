@@ -1,8 +1,9 @@
 'use strict'
 
 import assert from 'assert'
+import ftl from '@fluent/dedent'
 
-import { compileAndRequire, ftl } from './util'
+import { compileAndRequire } from './util'
 
 suite('Built-in functions', function() {
   suite('NUMBER', function() {
@@ -15,7 +16,7 @@ suite('Built-in functions', function() {
           num-decimal = { NUMBER($arg) }
           num-percent = { NUMBER($arg, style: "percent") }
           num-bad-opt = { NUMBER($arg, style: "bad") }
-        `
+          `
       )
       msgDec = bundle.getMessage('num-decimal')
       msgPct = bundle.getMessage('num-percent')
@@ -53,7 +54,7 @@ suite('Built-in functions', function() {
           dt-default = { DATETIME($arg) }
           dt-month = { DATETIME($arg, month: "long") }
           dt-bad-opt = { DATETIME($arg, month: "bad") }
-        `
+          `
       )
       msgDef = bundle.getMessage('dt-default')
       msgMon = bundle.getMessage('dt-month')

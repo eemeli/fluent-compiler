@@ -1,6 +1,8 @@
 'use strict'
 import assert from 'assert'
-import { compileAndRequire, ftl } from './util'
+import ftl from '@fluent/dedent'
+
+import { compileAndRequire } from './util'
 
 suite('Select expressions', function() {
   let errs
@@ -16,7 +18,7 @@ suite('Select expressions', function() {
             [a] A
            *[b] B
         }
-      `
+        `
     )
     const msg = bundle.getMessage('select')
     const val = bundle.formatPattern(msg.value, null, errs)
@@ -37,7 +39,7 @@ suite('Select expressions', function() {
               [a] A
              *[b] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 'a' }, errs)
@@ -53,7 +55,7 @@ suite('Select expressions', function() {
               [a] A
              *[b] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 'c' }, errs)
@@ -71,7 +73,7 @@ suite('Select expressions', function() {
               [0] A
              *[1] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 0 }, errs)
@@ -87,7 +89,7 @@ suite('Select expressions', function() {
               [0] A
              *[1] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
@@ -105,7 +107,7 @@ suite('Select expressions', function() {
               [one] A
              *[other] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 1 }, errs)
@@ -121,7 +123,7 @@ suite('Select expressions', function() {
               [one] A
              *[other] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 'one' }, errs)
@@ -137,7 +139,7 @@ suite('Select expressions', function() {
               [one] A
              *[default] D
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
@@ -153,7 +155,7 @@ suite('Select expressions', function() {
               [one] A
              *[default] D
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 'other' }, errs)
@@ -169,7 +171,7 @@ suite('Select expressions', function() {
               [one] A
              *[other] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 1 }, errs)
@@ -185,7 +187,7 @@ suite('Select expressions', function() {
               [two] A
              *[other] B
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
@@ -202,7 +204,7 @@ suite('Select expressions', function() {
               [two] B
              *[other] C
           }
-        `
+          `
       )
       const msg = bundle.getMessage('select')
       const val = bundle.formatPattern(msg.value, { selector: 2 }, errs)
