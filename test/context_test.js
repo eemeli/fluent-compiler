@@ -1,6 +1,8 @@
 'use strict'
 import assert from 'assert'
-import { compileAndRequire, ftl } from './util'
+import ftl from '@fluent/dedent'
+
+import { compileAndRequire } from './util'
 
 suite('Bundle', function() {
   let bundle
@@ -11,7 +13,7 @@ suite('Bundle', function() {
       const src = ftl`
         foo = Foo
         -bar = Bar
-      `
+        `
       const resource = await compileAndRequire('en-US', src, true)
       bundle.addResource(resource)
     })
@@ -65,7 +67,7 @@ suite('Bundle', function() {
           err4 =
               .attr1 = Attr
               .attr2 = {}
-        `
+          `
       )
     })
 

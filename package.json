@@ -48,6 +48,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
+    "@fluent/dedent": "^0.1.0",
     "intl-pluralrules": "^1.0.2",
     "mocha": "^6.1.4",
     "prettier": "^1.17.1",
