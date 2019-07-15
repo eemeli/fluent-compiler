@@ -2,7 +2,7 @@ import assert from 'assert'
 import ftl from '@fluent/dedent'
 import { FluentParser } from 'fluent-syntax'
 
-import { FluentCompiler } from '../src/compiler'
+import { FluentCompiler } from '../packages/compiler/src/compiler'
 
 function trimModuleHeaders(source) {
   const footer = ftl`

@@ -1,1 +1,1 @@
-module.exports = require('../../src/runtime/bundle')
+module.exports = require('../../packages/runtime/src/bundle')

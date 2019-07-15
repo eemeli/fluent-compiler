@@ -1,0 +1,40 @@
+{
+  "name": "fluent-compiler",
+  "version": "0.1.0",
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "Apache-2.0",
+  "description": "JavaScript transpiler for Fluent messages",
+  "keywords": [
+    "localization",
+    "l10n",
+    "internationalization",
+    "i18n",
+    "fluent",
+    "ftl",
+    "ast",
+    "compiler",
+    "transpiler"
+  ],
+  "homepage": "https://github.com/eemeli/fluent-compiler#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eemeli/fluent-compiler.git",
+    "directory": "packages/compiler"
+  },
+  "main": "dist/index",
+  "files": [
+    "dist/"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "babel src/ -d dist/"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "dependencies": {
+    "fluent-runtime": "file:../runtime",
+    "fluent-syntax": "^0.13.0",
+    "safe-identifier": "^0.1.0"
+  }
+}

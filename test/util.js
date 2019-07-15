@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import tmp from 'tmp'
 
-import { compile } from '../src'
+import { compile } from '../packages/compiler/src'
 
 export function compileAndRequire(locale, ftlSrc, asResource) {
   const runtimePath = path.resolve(__dirname, 'runtime')

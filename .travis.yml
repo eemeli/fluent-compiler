@@ -9,4 +9,4 @@ jobs:
     - stage: Prettier
       node_js: node
       script:
-        - npx prettier --check *.js src/* test/*
+        - npx prettier --check *.js packages/*/src/* test/*

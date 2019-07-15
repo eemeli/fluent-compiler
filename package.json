@@ -1,46 +1,24 @@
 {
-  "name": "fluent-compiler",
+  "name": "fluent-compiler-monorepo",
   "version": "0.1.0",
   "author": "Eemeli Aro <eemeli@gmail.com>",
   "license": "Apache-2.0",
-  "description": "JavaScript transpiler for Fluent messages",
-  "keywords": [
-    "localization",
-    "l10n",
-    "internationalization",
-    "i18n",
-    "ftl",
-    "ast",
-    "compiler",
-    "transpiler"
-  ],
-  "homepage": "https://github.com/eemeli/fluent-compiler#readme",
+  "description": "Monorepo for fluent-compiler",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eemeli/fluent-compiler.git"
   },
-  "main": "dist/index",
-  "files": [
-    "dist/",
-    "runtime/"
-  ],
-  "sideEffects": false,
   "scripts": {
-    "build": "babel src/ -d dist/",
-    "prepublishOnly": "npm test && npm run build",
     "prettier": "prettier --write *.js src/* test/*",
     "test": "mocha --ui tdd --require mocha_setup test/**/*_test.js"
-  },
-  "engines": {
-    "node": ">=8.9.0"
   },
   "prettier": {
     "semi": false,
     "singleQuote": true
   },
   "dependencies": {
-    "fluent-syntax": "^0.13.0",
-    "safe-identifier": "^0.1.0"
+    "fluent-compiler": "file:packages/compiler",
+    "fluent-runtime": "file:packages/runtime"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
@@ -50,7 +28,9 @@
     "@babel/preset-env": "^7.5.4",
     "@babel/register": "^7.4.4",
     "@fluent/dedent": "^0.1.0",
+    "fluent-syntax": "^0.13.0",
     "intl-pluralrules": "^1.0.3",
+    "lerna": "^3.15.0",
     "mocha": "^6.1.4",
     "prettier": "^1.18.2",
     "tmp": "^0.1.0"

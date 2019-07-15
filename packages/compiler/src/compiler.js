@@ -4,7 +4,7 @@ export class FluentCompiler {
   constructor({
     runtime = 'bundle',
     runtimeGlobals = ['DATETIME', 'NUMBER'],
-    runtimePath = 'fluent-compiler/runtime',
+    runtimePath = 'fluent-runtime',
     useIsolating = true,
     withJunk = false
   } = {}) {
@@ -43,7 +43,9 @@ export class FluentCompiler {
 
     switch (this.runtime) {
       case 'bundle':
-        head.unshift(`import { FluentBundle } from "${this.runtimePath}/bundle";`)
+        head.unshift(
+          `import { FluentBundle } from "${this.runtimePath}/bundle";`
+        )
         foot.push(`export default new FluentBundle(${lc}, R);`)
         break
       case 'resource':

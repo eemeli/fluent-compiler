@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { FluentCompiler } from '../src'
+import { FluentCompiler } from '../packages/compiler/src'
 
 suite('Compile entry', function() {
   setup(function() {
