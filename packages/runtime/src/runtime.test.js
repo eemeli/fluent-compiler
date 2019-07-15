@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { Runtime } from '../packages/runtime/src/runtime'
+import { Runtime } from './runtime'
 
 suite('Runtime', function() {
   suite('Undefined locale uses system fallback', function() {

@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { FluentBundle } from '../packages/runtime/src/bundle'
+import { FluentBundle } from './bundle'
 
 suite('Bundle runtime', function() {
   suite('Undefined locale uses system fallback', function() {

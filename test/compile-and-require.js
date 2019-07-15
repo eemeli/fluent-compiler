@@ -5,7 +5,7 @@ import tmp from 'tmp'
 import { compile } from '../packages/compiler/src'
 
 export function compileAndRequire(locale, ftlSrc, asResource) {
-  const runtimePath = path.resolve(__dirname, 'runtime')
+  const runtimePath = path.resolve(__dirname, '../packages/runtime/src')
   const jsSrc = compile(locale, ftlSrc, {
     runtime: asResource ? 'resource' : 'bundle',
     runtimePath

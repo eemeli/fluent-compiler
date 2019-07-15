@@ -11,7 +11,8 @@
   "scripts": {
     "build": "lerna run build",
     "prettier": "prettier --write *.js src/* test/*",
-    "test": "mocha --ui tdd --require mocha_setup test/**/*_test.js"
+    "test:e2e": "mocha --ui tdd --require mocha_setup test/*.test.js",
+    "test": "lerna run test && npm run test:e2e"
   },
   "prettier": {
     "semi": false,

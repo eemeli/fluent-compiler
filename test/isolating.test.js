@@ -1,8 +1,7 @@
-'use strict'
 import assert from 'assert'
 import ftl from '@fluent/dedent'
 
-import { compileAndRequire } from './util'
+import { compileAndRequire } from './compile-and-require'
 
 // Unicode bidi isolation characters.
 const FSI = '\u2068'

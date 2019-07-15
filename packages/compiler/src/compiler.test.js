@@ -2,7 +2,7 @@ import assert from 'assert'
 import ftl from '@fluent/dedent'
 import { FluentParser } from 'fluent-syntax'
 
-import { FluentCompiler } from '../packages/compiler/src/compiler'
+import { FluentCompiler } from './compiler'
 
 function trimModuleHeaders(source) {
   const footer = ftl`
@@ -18,6 +18,36 @@ function trimModuleHeaders(source) {
     .replace(/^const R = new Map\(\[\n\n/, '')
     .replace(new RegExp(footer + '$'), '')
 }
+
+suite('Compile entry', function() {
+  setup(function() {
+    this.compiler = new FluentCompiler()
+  })
+
+  test('simple message', function() {
+    const input = {
+      comment: null,
+      value: {
+        elements: [
+          {
+            type: 'TextElement',
+            value: 'Foo'
+          }
+        ],
+        type: 'Pattern'
+      },
+      attributes: [],
+      type: 'Message',
+      id: {
+        type: 'Identifier',
+        name: 'foo'
+      }
+    }
+    const output = '["foo", { value: $ => ["Foo"] }],'
+    const message = this.compiler.entry(input)
+    assert.equal(message, output)
+  })
+})
 
 suite('Compile resource', function() {
   let pretty
