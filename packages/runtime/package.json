@@ -10,13 +10,20 @@
     "url": "git+https://github.com/eemeli/fluent-compiler.git",
     "directory": "packages/runtime"
   },
-  "main": "dist/runtime",
+  "main": "runtime",
   "files": [
-    "bundle.js",
-    "dist/"
+    "bundle.*",
+    "intl-memo.*",
+    "runtime.*"
   ],
   "sideEffects": false,
+  "browserslist": "defaults",
   "scripts": {
-    "build": "babel src/ -d dist/"
+    "build:esm:bundle": "ESM=1 babel src/bundle.js -o ./bundle.mjs",
+    "build:esm:intl-memo": "ESM=1 babel src/intl-memo.js -o ./intl-memo.mjs",
+    "build:esm:runtime": "ESM=1 babel src/runtime.js -o ./runtime.mjs",
+    "build:esm": "npm run build:esm:bundle && npm run build:esm:intl-memo && npm run build:esm:runtime",
+    "build:cjs": "babel src/ -d .",
+    "build": "npm run build:esm && npm run build:cjs"
   }
 }

@@ -9,6 +9,7 @@
     "url": "git+https://github.com/eemeli/fluent-compiler.git"
   },
   "scripts": {
+    "build": "lerna run build",
     "prettier": "prettier --write *.js src/* test/*",
     "test": "mocha --ui tdd --require mocha_setup test/**/*_test.js"
   },
