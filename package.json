@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "fluent-compiler": "file:packages/compiler",
+    "fluent-loader": "file:packages/loader",
     "fluent-runtime": "file:packages/runtime"
   },
   "devDependencies": {
@@ -31,11 +32,17 @@
     "@babel/preset-env": "^7.5.4",
     "@babel/register": "^7.4.4",
     "@fluent/dedent": "^0.1.0",
+    "babel-jest": "^24.8.0",
+    "babel-loader": "^8.0.6",
+    "common-tags": "^2.0.0-alpha.1",
     "fluent-syntax": "^0.13.0",
     "intl-pluralrules": "^1.0.3",
+    "jest": "^24.8.0",
     "lerna": "^3.15.0",
+    "memory-fs": "^0.4.1",
     "mocha": "^6.1.4",
     "prettier": "^1.18.2",
-    "tmp": "^0.1.0"
+    "tmp": "^0.1.0",
+    "webpack": "^4.35.3"
   }
 }
