@@ -4,33 +4,34 @@ import compiler from './es6-compiler'
 test('Simple FTL', async () => {
   const js = await compiler('fixtures/simple.ftl')
   expect(js).toBe(source`
-    import Runtime from "fluent-compiler/runtime"
-    const { bundle, isol } = Runtime(["en-US"])
+    import Bundle from "fluent-compiler/runtime/bundle";
+    import Runtime from "fluent-compiler/runtime";
+    const { isol } = Runtime(["en-US"]);
     const R = new Map([
 
     ["hello-user", { value: $ => ["Hello, ", isol($.userName), "!"] }],
 
-    ])
-    export const resource = R
-    export default bundle(R)
+    ]);
+    export default new Bundle(["en-US"], R);
   `)
 })
 
 test('Complex FTL with options', async () => {
   const js = await compiler('fixtures/complex.ftl', { useIsolating: false })
   expect(js).toBe(source`
-    import Runtime from "fluent-compiler/runtime"
-    const { bundle, select } = Runtime(["en-US"])
+    import Bundle from "fluent-compiler/runtime/bundle";
+    import Runtime from "fluent-compiler/runtime";
+    const { select } = Runtime(["en-US"]);
     const R = new Map([
 
     // Simple things are simple.
     ["hello-user", { value: $ => ["Hello, ", $.userName, "!"] }],
+
     // Complex things are possible.
     ["shared-photos", { value: $ => [$.userName, " ", select($.photoCount, "other", { one: "added a new photo", other: ["added ", $.photoCount, " new photos"] }), " to ", select($.userGender, "other", { male: "his stream", female: "her stream", other: "their stream" }), "."] }],
 
-    ])
-    export const resource = R
-    export default bundle(R)
+    ]);
+    export default new Bundle(["en-US"], R);
   `)
 })
 
@@ -41,15 +42,13 @@ describe('Options', () => {
       useIsolating: false
     })
     expect(js).toBe(source`
-      import Runtime from "fluent-compiler/runtime"
-      const { bundle } = Runtime(["en-ZA"])
+      import Bundle from "fluent-compiler/runtime/bundle";
       const R = new Map([
 
       ["hello-user", { value: $ => ["Hello, ", $.userName, "!"] }],
 
-      ])
-      export const resource = R
-      export default bundle(R)
+      ]);
+      export default new Bundle(["en-ZA"], R);
     `)
   })
 
@@ -57,14 +56,14 @@ describe('Options', () => {
     const js = await compiler('fixtures/simple.ftl', {
       locales: ['foo', 'bar']
     })
-    expect(js).toMatch(`const { bundle, isol } = Runtime(["foo"])`)
+    expect(js).toMatch(`const { isol } = Runtime(["foo"])`)
   })
 
   test('locales: filename match', async () => {
     const js = await compiler('fixtures/simple.ftl', {
       locales: ['foo', 'simple']
     })
-    expect(js).toMatch(`const { bundle, isol } = Runtime(["simple"])`)
+    expect(js).toMatch(`const { isol } = Runtime(["simple"])`)
   })
 
   test('locales: empty', async () => {
