@@ -1,22 +1,9 @@
 {
   "name": "fluent-compiler",
   "version": "0.1.0",
-  "description": "",
-  "main": "dist/index.js",
-  "files": [
-    "dist/",
-    "runtime.js"
-  ],
-  "scripts": {
-    "build": "babel src/ -d dist/",
-    "prepublishOnly": "npm test && npm run build",
-    "prettier": "prettier --write *.js src/* test/*",
-    "test": "mocha --ui tdd --require mocha_setup test/**/*_test.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eemeli/fluent-compiler.git"
-  },
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "Apache-2.0",
+  "description": "JavaScript transpiler for Fluent messages",
   "keywords": [
     "localization",
     "l10n",
@@ -27,9 +14,23 @@
     "compiler",
     "transpiler"
   ],
-  "author": "Eemeli Aro <eemeli@gmail.com>",
-  "license": "Apache-2.0",
   "homepage": "https://github.com/eemeli/fluent-compiler#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eemeli/fluent-compiler.git"
+  },
+  "main": "dist/index",
+  "files": [
+    "dist/",
+    "runtime/"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "babel src/ -d dist/",
+    "prepublishOnly": "npm test && npm run build",
+    "prettier": "prettier --write *.js src/* test/*",
+    "test": "mocha --ui tdd --require mocha_setup test/**/*_test.js"
+  },
   "engines": {
     "node": ">=8.9.0"
   },
