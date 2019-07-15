@@ -4,23 +4,23 @@ import compiler from './es6-compiler'
 test('Simple FTL', async () => {
   const js = await compiler('fixtures/simple.ftl')
   expect(js).toBe(source`
-    import Bundle from "fluent-compiler/runtime/bundle";
-    import Runtime from "fluent-compiler/runtime";
+    import { FluentBundle } from "fluent-runtime/bundle";
+    import { Runtime } from "fluent-runtime";
     const { isol } = Runtime(["en-US"]);
     const R = new Map([
 
     ["hello-user", { value: $ => ["Hello, ", isol($.userName), "!"] }],
 
     ]);
-    export default new Bundle(["en-US"], R);
+    export default new FluentBundle(["en-US"], R);
   `)
 })
 
 test('Complex FTL with options', async () => {
   const js = await compiler('fixtures/complex.ftl', { useIsolating: false })
   expect(js).toBe(source`
-    import Bundle from "fluent-compiler/runtime/bundle";
-    import Runtime from "fluent-compiler/runtime";
+    import { FluentBundle } from "fluent-runtime/bundle";
+    import { Runtime } from "fluent-runtime";
     const { select } = Runtime(["en-US"]);
     const R = new Map([
 
@@ -31,7 +31,7 @@ test('Complex FTL with options', async () => {
     ["shared-photos", { value: $ => [$.userName, " ", select($.photoCount, "other", { one: "added a new photo", other: ["added ", $.photoCount, " new photos"] }), " to ", select($.userGender, "other", { male: "his stream", female: "her stream", other: "their stream" }), "."] }],
 
     ]);
-    export default new Bundle(["en-US"], R);
+    export default new FluentBundle(["en-US"], R);
   `)
 })
 
@@ -42,13 +42,13 @@ describe('Options', () => {
       useIsolating: false
     })
     expect(js).toBe(source`
-      import Bundle from "fluent-compiler/runtime/bundle";
+      import { FluentBundle } from "fluent-runtime/bundle";
       const R = new Map([
 
       ["hello-user", { value: $ => ["Hello, ", $.userName, "!"] }],
 
       ]);
-      export default new Bundle(["en-ZA"], R);
+      export default new FluentBundle(["en-ZA"], R);
     `)
   })
 
