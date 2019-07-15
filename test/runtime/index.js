@@ -1,1 +1,1 @@
-module.exports = require('../../src/runtime').default
+module.exports = require('../../src/runtime')

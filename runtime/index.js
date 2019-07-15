@@ -1,1 +1,1 @@
-module.exports = require('../dist/runtime').default
+module.exports = require('../dist/runtime')

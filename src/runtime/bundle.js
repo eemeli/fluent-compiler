@@ -22,7 +22,7 @@ function msgString(lc, parts) {
     .join('')
 }
 
-export default class FluentBundle {
+export class FluentBundle {
   constructor(lc, resource) {
     this._res = resource
     this.locales = Array.isArray(lc) ? lc : [lc]

@@ -13,7 +13,7 @@ function trimModuleHeaders(source) {
 
     `
   return source
-    .replace(/^(import (Bundle|Runtime) from .*\n)+/, '')
+    .replace(/^(import { (FluentBundle|Runtime) } from .*\n)+/, '')
     .replace(/^const { .* } = Runtime.*\n/, '')
     .replace(/^const R = new Map\(\[\n\n/, '')
     .replace(new RegExp(footer + '$'), '')

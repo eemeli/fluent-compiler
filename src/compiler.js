@@ -36,15 +36,15 @@ export class FluentCompiler {
     const rt = Object.keys(this._rtImports).filter(key => this._rtImports[key])
     if (rt.length > 0) {
       head.unshift(
-        `import Runtime from "${this.runtimePath}";`,
+        `import { Runtime } from "${this.runtimePath}";`,
         `const { ${rt.join(', ')} } = Runtime(${lc});`
       )
     }
 
     switch (this.runtime) {
       case 'bundle':
-        head.unshift(`import Bundle from "${this.runtimePath}/bundle";`)
-        foot.push(`export default new Bundle(${lc}, R);`)
+        head.unshift(`import { FluentBundle } from "${this.runtimePath}/bundle";`)
+        foot.push(`export default new FluentBundle(${lc}, R);`)
         break
       case 'resource':
         foot.push('export default R;')

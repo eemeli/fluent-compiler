@@ -1,6 +1,6 @@
 import { dtf, nf, pr } from './intl-memo'
 
-export default function Runtime(lc) {
+export function Runtime(lc) {
   return {
     isol(expr) {
       // Unicode bidi isolation characters.

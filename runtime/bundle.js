@@ -1,1 +1,1 @@
-module.exports = require('../dist/runtime/bundle').default
+module.exports = require('../dist/runtime/bundle')
