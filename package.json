@@ -12,7 +12,7 @@
     "build": "lerna run build",
     "clean": "git clean -fdx packages/",
     "prettier": "prettier --write *.js src/* test/*",
-    "test:e2e": "mocha --ui tdd --require mocha_setup test/*.test.js",
+    "test:e2e": "mocha --ui tdd --require test/mocha.setup test/*.test.js",
     "test": "lerna run test && npm run test:e2e"
   },
   "prettier": {

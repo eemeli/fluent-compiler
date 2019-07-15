@@ -25,6 +25,6 @@
     "build:esm": "npm run build:esm:bundle && npm run build:esm:intl-memo && npm run build:esm:runtime",
     "build:cjs": "babel src/ -d . --ignore 'src/*.test.js' --ignore src/index.js",
     "build": "npm run build:esm && npm run build:cjs",
-    "test": "mocha --ui tdd --require ../../mocha_setup src/*.test.js"
+    "test": "mocha --ui tdd --require ../../test/mocha.setup src/*.test.js"
   }
 }

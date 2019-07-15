@@ -28,7 +28,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "babel src/ -d dist/ --ignore 'src/*.test.js'",
-    "test": "mocha --ui tdd --require ../../mocha_setup src/*.test.js"
+    "test": "mocha --ui tdd --require ../../test/mocha.setup src/*.test.js"
   },
   "engines": {
     "node": ">=8.9.0"
